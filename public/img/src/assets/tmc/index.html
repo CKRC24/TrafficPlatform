@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Localizing the Map</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      html, body, #map-canvas {
+        height: 100%;
+        margin:0px;
+        padding: 0px;
+      }
+
+     .labels {
+     color: red;
+     background-color: white;
+     font-family: "Lucida Grande", "Aral", sans-serif;
+     font-size: 14px;
+     font-weight: bold;
+     text-align: center;
+     width: 200px;    
+     border: 2px solid black;
+     white-space: nowrap;
+   }
+   #refresh_button{
+          position:absolute;
+          bottom:2%;
+          color: #fff;
+          background-color: #77DDFF;
+          padding: 11px;
+
+          border: 1px solid transparent;
+          border-radius: 2px;
+          box-sizing: border-box;
+          -moz-box-sizing: border-box;
+
+          outline: none;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+          alignment-baseline:central;
+          width:6%;
+          height:13%;
+          left:5%;
+          text-align:center;
+          text-decoration:none;
+          margin:0px auto;}
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&language=zh-TW"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+    <script src="http://140.92.88.92:38080/TrafficPlatform/MarkerLabel.js" type="text/javascript"></script>
+    <script>
+var map;
+var infoWindow;
+var mylat;
+var mylon;
+var image = new google.maps.MarkerImage("iam.png", null, null, null, new google.maps.Size(55,55));
+
+function initialize() {
+  mylat = AndroidFunction.MyLoc_lat();
+  mylon = AndroidFunction.MyLoc_lon();	
+  console.log(mylat+","+mylon);
+
+  var mapMarker;
+  var my = new google.maps.LatLng(mylat,mylon);
+  var mapOptions = {
+      zoom: 16,
+      center: my
+    }; 
+    map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
+    // Register a click event to the map
+    google.maps.event.addListener(map, "click", function(event) {
+      console.log("i have clicked!");
+      var speedLatLng = event.latLng;
+      var speedlat = speedLatLng.lat();
+      var speedlng = speedLatLng.lng();
+      console.log(speedlat+","+speedlng);
+      displaySpeed(speedlat,speedlng);
+  	}); 
+    var nyLayer = new google.maps.KmlLayer(
+                  'http://140.92.88.92:38080/TrafficPlatform/traffic_condition.kml',
+                  {
+                      suppressInfoWindows: true,
+                      map: map,
+                      preserveViewport: true
+                  });
+    nyLayer.addListener('click', function(kmlEvent) {
+      var speedLatLng = kmlEvent.latLng;
+      var speed_lat = speedLatLng.lat();
+      var speed_lng = speedLatLng.lng();
+      displaySpeed(speed_lat,speed_lng);
+    });
+}
+
+function locError(error) {
+	// tell the user if the current position could not be located
+    alert("The current position could not be found!");
+}
+
+// current position of the user
+function setCurrentPosition(pos) {
+	currentPositionMarker = new google.maps.Marker({
+        map: map,
+        position: new google.maps.LatLng(
+            pos.coords.latitude,
+            pos.coords.longitude
+        ),
+        icon:image,
+        title: "Current Position"
+    });
+    map.panTo(new google.maps.LatLng(
+        pos.coords.latitude,
+        pos.coords.longitude
+    ));
+}
+
+function displayAndWatch(position) {
+	// set current position
+    setCurrentPosition(position);
+    // watch position
+    watchCurrentPosition();
+}
+
+function watchCurrentPosition() {
+	var positionTimer = navigator.geolocation.watchPosition(
+    function (position) {
+    	setMarkerPosition(currentPositionMarker,position);
+    });
+}
+
+function setMarkerPosition(marker, position) {
+	marker.setPosition(new google.maps.LatLng(
+                    position.coords.latitude,
+                    position.coords.longitude));
+}
+
+function initLocationProcedure() {
+	initialize();
+    if (navigator.geolocation) {
+    	navigator.geolocation.getCurrentPosition(displayAndWatch, locError);
+    } else {
+                // tell the user if a browser doesn't support this amazing API
+                alert("Your browser does not support the Geolocation API!");
+    }
+}
+
+// initialize with a little help of jQuery
+$(document).ready(function() {
+	initLocationProcedure();
+});
+
+//http://140.92.88.92:38080/RoadSpeed/getData?lon=121.554657&lat=25.058299
+function displaySpeed(speed_lat,speed_lng){		
+  var geocodingAPI = "http://140.92.88.92:38080/RoadSpeed/getData?lon="+speed_lng+"&lat="+speed_lat;
+  console.log(geocodingAPI);
+    $.get(geocodingAPI, function (data) {
+        console.log("get Data");
+        console.log("Data Loaded: " + data);
+		var speed = data.split(",");
+		var lat = speed[0];
+		console.log("lat: " + lat);
+        var lng = speed[1];
+		console.log("lng: " + lng);
+		var speedNum = speed[2];
+		console.log("speedNum: " + speedNum);
+		var address = speed[3];
+		console.log("address: " + address);
+
+		//console.log("markerCount: " + markerCount);
+		var latlng = new google.maps.LatLng(lat, lng); 
+	    
+      	//http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerwithlabel/1.1.8/docs/examples.html
+      	var marker1 = new MarkerWithLabel({
+	       		position: latlng,
+	       		draggable: false,
+	       		raiseOnDrag: false,
+	       		map: map,
+	       		labelContent: "速度："+speedNum+"km/hr"+'</br>'+"路段："+address,
+	       		labelAnchor: new google.maps.Point(22, 0),
+	       		labelClass: "labels", // the CSS class for the label
+	       		labelStyle: {opacity: 0.75},
+            labelAnchor: new google.maps.Point(100, 0)
+	    });
+
+
+	      　// Setting of marker
+	　　var optionOfMarkerS = {
+	　　　　　　position: latlng,
+	　　　　　　map: map
+	　　};  
+	　　mapMarker = new google.maps.Marker(optionOfMarkerS);
+  
+      });
+}
+
+
+google.maps.event.addDomListener(window, 'load', initialize);
+
+    </script>
+  </head>
+  <body>
+    <div id="map-canvas"></div>
+  </body>
+</html>

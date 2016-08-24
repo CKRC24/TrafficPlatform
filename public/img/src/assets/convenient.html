@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Localizing the Map</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+    html,
+    body,
+    #map-canvas {
+        height: 100%;
+        margin: 0px;
+        padding: 0px;
+    }
+    
+    .labels_red {
+        color: #fd5c63;
+        background-color: white;
+        font-family: "Lucida Grande", "Aral", sans-serif;
+        font-size: 14px;
+        font-weight: bold;
+        text-align: center;
+        width: 200px;
+        border: 2px;
+        white-space: nowrap;
+    }
+    
+    .labels_darkred {
+        color: #CC0000;
+        background-color: white;
+        font-family: "Lucida Grande", "Aral", sans-serif;
+        font-size: 14px;
+        font-weight: bold;
+        text-align: center;
+        width: 200px;
+        border: 2px;
+        white-space: nowrap;
+    }
+    
+    .labels_yellow {
+        color: #EEEE00;
+        background-color: white;
+        font-family: "Lucida Grande", "Aral", sans-serif;
+        font-size: 14px;
+        font-weight: bold;
+        text-align: center;
+        width: 200px;
+        border: 2px;
+        white-space: nowrap;
+    }
+    
+    .labels_green {
+        color: #66DD00;
+        background-color: white;
+        font-family: "Lucida Grande", "Aral", sans-serif;
+        font-size: 14px;
+        font-weight: bold;
+        text-align: center;
+        width: 200px;
+        border: 2px;
+        white-space: nowrap;
+    }
+
+    .loader {
+    position: absolute;
+    left: 60%;
+    top: 50%;
+    z-index: 1;
+    margin: -75px 0 0 -75px;
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #3498db;
+    width: 80px;
+    height: 80px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    }
+
+    @-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+    }
+
+    @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+    }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&language=zh-TW"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+    <script src="http://140.92.88.92:38080/TrafficPlatform/MarkerLabel.js" type="text/javascript"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAmUejuXfhXsNmB17zducINT343TI6TO_8"
+            type="text/javascript"></script>
+
+    <link rel="stylesheet" href="./assets/vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./assets/css/kyart.css">
+    <!-- Library 主要設定檔-->
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="./assets/js/ui_setting.js"></script>
+    <script>
+    var map;
+    var infoWindow;
+    var mylat;
+    var mylon;
+    var kmlName;
+    var noil=0;
+    var ntoilet=0;
+    var ncarFactory = 0;
+    var nhospital=0;
+    var npolice = 0;
+    var jsonData;
+    var lookup = [];
+    var markers = [];
+    var valueT, MinT, MaxT;
+
+    //var image = new google.maps.MarkerImage("iam.png", null, null, null, new google.maps.Size(55, 55));
+    var image = new google.maps.MarkerImage("smallcar-hdpi.png", null, null, null, new google.maps.Size(40, 40));
+    var darkred = new google.maps.MarkerImage("location_darkred.png", null, null, null, new google.maps.Size(64, 64));
+    var red = new google.maps.MarkerImage("location_red.png", null, null, null, new google.maps.Size(64, 64));
+    var yellow = new google.maps.MarkerImage("location_yellow.png", null, null, null, new google.maps.Size(64, 64));
+    var green = new google.maps.MarkerImage("location_green.png", null, null, null, new google.maps.Size(64, 64));
+    
+    var oilImage = new google.maps.MarkerImage("./assets/img/sign-info01.png", null, null, null, new google.maps.Size(29, 39));
+    var toiletImage = new google.maps.MarkerImage("./assets/img/sign-info02.png", null, null, null, new google.maps.Size(29, 39));
+    var carRepairImage = new google.maps.MarkerImage("./assets/img/sign-info03.png", null, null, null, new google.maps.Size(29, 39));
+    var carWashImage = new google.maps.MarkerImage("./assets/img/sign-info04.png", null, null, null, new google.maps.Size(29, 39));
+    var hospitalImage = new google.maps.MarkerImage("./assets/img/sign-info05.png", null, null, null, new google.maps.Size(29, 39));
+    var policeImage = new google.maps.MarkerImage("./assets/img/sign-info06.png", null, null, null, new google.maps.Size(29, 39));
+    var restImage = new google.maps.MarkerImage("./assets/img/sign-info07.png", null, null, null, new google.maps.Size(29, 39));
+
+    var pinstart = new google.maps.MarkerImage("pin-start.png", null, null, null, new google.maps.Size(15, 25));
+    var pinfinal = new google.maps.MarkerImage("pin-final.png", null, null, null, new google.maps.Size(15, 25));
+
+    var typeImage =[oilImage,toiletImage,carRepairImage,carWashImage,hospitalImage,policeImage,restImage];
+    var globalUrl;
+    var currentLat, currentLon, convenMarkerLat, convenMarkerLon;
+    var nyLayer,nyLayer0,nyLayer1,markerMy;
+    var Data_real_change;
+    var markerStart,markerFinal;
+    var uuid;
+
+    function initialize() {
+        $('#nowloading1').modal('show');
+        mylat = AndroidFunction.MyLoc_lat();
+        mylon = AndroidFunction.MyLoc_lon();
+        kmlName = AndroidFunction.kmlName();
+        uuid = AndroidFunction.Getuuid();
+        console.log(mylat + "," + mylon + "," + kmlName);
+        var mapMarker;
+        var my = new google.maps.LatLng(mylat, mylon);
+        var myStyles =[
+            {
+                featureType: "poi",
+                elementType: "labels",
+                stylers: [
+                      { visibility: "off" }
+                ]
+            }
+        ];
+        var mapOptions = {
+            minZoom:7,
+            maxZoom:16,
+            zoom: 15,
+            streetViewControl: false,
+            zoomControl: false,
+            mapTypeControl: false,
+            center: my,
+            styles: myStyles
+        };
+        map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
+        //$('#nowloading1').modal('hide');
+
+        var Data1 = httpGet("https://ulcac3l8d4.execute-api.ap-northeast-1.amazonaws.com/beta/" + "roadinfo?period=0&lon="+mylon+"&lat="+mylat+"&uuid="+uuid);
+        Data1 = Data1.replace('"', '');
+        Data1 = Data1.replace('"', '');
+        nyLayer0 = new google.maps.KmlLayer(Data1, {
+            suppressInfoWindows: true,
+            preserveViewport: true
+        });
+        //$('#nowloading1').modal('show');
+        var myloadCount = setTimeout(closeloading, 5000);
+        nyLayer0.setMap(map);
+
+        google.maps.event.addListener(nyLayer0, "metadata_changed", function() {
+        $('#nowloading1').modal('hide');
+        clearTimeout(myloadCount);
+        });
+
+        var position = map.getCenter();
+        var lat = position.lat();
+        var long = position.lng();
+
+        noil = AndroidFunction.ConOil();
+        ntoilet = AndroidFunction.ConToilet();
+        ncarFactory = AndroidFunction.ConCarFactory();
+        nhospital = AndroidFunction.ConHospital();
+        npolice = AndroidFunction.ConPolice();
+
+//        setTimeout(function(){
+            var dragConUrl = "https://ulcac3l8d4.execute-api.ap-northeast-1.amazonaws.com/beta/poiinfo?lon="+long+"&lat="+lat+"&range=500"+"&oil="+noil+"&toilet="+ntoilet+"&carFactory="+ncarFactory+"&hospital="+nhospital+"&police="+npolice+"&uuid="+uuid;
+            httpGetAsync(dragConUrl, function(status, response){
+                if(response.length>0){
+                    //alert(response);
+                    jsonData = response;
+                    displayConvenMarkers();
+                }
+              });
+//        }, 10);
+        
+        map.addListener('dragend', function () {
+            // 3 seconds after the center of the map has changed, pan back to the marker.
+
+            position = map.getCenter();
+            lat = position.lat();
+            long = position.lng();
+            //alert("dragend");
+
+//            setTimeout(function () {
+                //var Data1 = httpGet("https://ulcac3l8d4.execute-api.ap-northeast-1.amazonaws.com/beta/" + "roadinfo?period=0"+"&lon="+long+"&lat="+lat+"&range=1000");
+                httpGetAsync("https://ulcac3l8d4.execute-api.ap-northeast-1.amazonaws.com/beta/" + "roadinfo?period=0"+"&lon="+long+"&lat="+lat+"&range=1000"+"&uuid="+uuid,
+                function(status, response){
+                    Data1 = response;
+                    if(Data1 != Data_real_change)
+                    {
+                        Data_real_change = Data1;
+                        //alert(Data1);
+                        Data1 = Data1.replace('"', '');
+                        Data1 = Data1.replace('"', '');
+
+                        if(!(nyLayer0 == null)) {
+                            nyLayer0.setMap(null);
+                        }
+
+                        nyLayer0 = new google.maps.KmlLayer(Data1, {
+                            suppressInfoWindows: true,
+                            map: map,
+                            preserveViewport: true
+                        });
+                    }
+                });
+//            }, 300);
+
+            setTimeout(function(){
+                //var dragConUrl = "https://ulcac3l8d4.execute-api.ap-northeast-1.amazonaws.com/beta/poiinfo?lon="+long+"&lat="+lat+"&range=500"+globalUrl;
+                dragConUrl = "https://ulcac3l8d4.execute-api.ap-northeast-1.amazonaws.com/beta/poiinfo?lon="+long+"&lat="+lat+"&range=500"+"&oil="+noil+"&toilet="+ntoilet+"&carFactory="+ncarFactory+"&hospital="+nhospital+"&police="+npolice+"&uuid="+uuid;
+                httpGetAsync(dragConUrl, function(status, response){
+                    if(response.length>0){
+                        //alert(response);
+                        jsonData = response;
+                        displayConvenMarkers();
+                    }
+                  });
+            }, 10);
+        });
+        
+        setWeather();
+    }
+    
+    function oilnow(oil)//now =0 ;after30min =1 ;after60min = 2
+    {
+        noil = oil;
+        //alert("@noil=" + noil);
+    }
+    function toiletnow(toilet)
+    {
+        ntoilet = toilet;
+        //alert("ntoilet=" + ntoilet);
+    }
+    function carFactorynow(carFactory)
+    {
+        ncarFactory = carFactory;
+    }
+    function hospitalnow(hospital)
+    {
+        nhospital = hospital;
+        //alert("nprice=" + nprice);
+    }
+    function policenow(police)
+    {
+        npolice = police;
+        //alert("npolice=" + npolice);
+    }
+
+    function closeloading() //強制關閉loading mark
+    {
+        $('#nowloading1').modal('hide');
+        //alert("載入交通路網圖層失敗");
+        $('#alertmessage1').modal('show');
+
+    }
+
+    function httpGet(theUrl) {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open("GET", theUrl, false); // false for synchronous request
+        xmlHttp.send(null);
+        return xmlHttp.responseText;
+    }
+
+    function httpGetAsync(theUrl, callback) {
+            var xmlHttp = new XMLHttpRequest();
+            var handleResponse = function (status, response) {
+                alert(response)
+            }
+            var handleStateChange = function () {
+                //alert(xmlHttp.readyState);
+                switch (xmlHttp.readyState) {
+                    case 0 : // UNINITIALIZED
+                    case 1 : // LOADING
+                    case 2 : // LOADED
+                    case 3 : // INTERACTIVE
+                    break;
+                    case 4 : // COMPLETED
+                    //alert(xmlHttp.responseText);
+                    callback(xmlHttp.status, xmlHttp.responseText);
+                    //handleResponse(xmlhttp.status, xmlhttp.responseText);
+                    break;
+                    default: alert("error");
+                }
+            }
+            //alert(theUrl);
+            xmlHttp.onreadystatechange=handleStateChange;
+            xmlHttp.open("GET", theUrl, true); // false for synchronous request
+            xmlHttp.send(null);
+        }
+
+    function showlayer(link1) {    
+        AndroidFunction.UpdateMyLoc_latlon();        
+        mylat = AndroidFunction.MyLoc_lat();
+        mylon = AndroidFunction.MyLoc_lon();        
+
+//        setTimeout(function () {
+            //var Data1 = httpGet("https://ulcac3l8d4.execute-api.ap-northeast-1.amazonaws.com/beta/" + "roadinfo?period=0&lon="+mylon+"&lat="+mylat);
+            httpGetAsync("https://ulcac3l8d4.execute-api.ap-northeast-1.amazonaws.com/beta/" + "roadinfo?period=2"+"&lon="+mylon1+"&lat="+mylat1+"&range=1000"+"&uuid="+uuid,
+                function(status, response){
+                Data1 = response;
+                Data1 = Data1.replace('"', '');
+                Data1 = Data1.replace('"', '');
+                nyLayer0 = new google.maps.KmlLayer(Data1, {
+                    suppressInfoWindows: true,
+                    map: map,
+                    preserveViewport: true
+                });
+            });
+//        }, 10);
+    }
+
+    function drawConvenMark(url) {
+        jsonData = httpGet(url);
+        displayConvenMarkers();
+    }
+
+    function displayConvenMarkers() {
+
+        // this variable sets the map bounds according to markers position
+        var bounds = new google.maps.LatLngBounds();
+        var markersData = JSON.parse(jsonData);
+
+        // Get the size of an object
+        var size = Object.size(markersData);
+        for (var ii = 0; ii < size; ii++) {
+            if(markersData.hasOwnProperty('oil')){
+                for (var i = 0; i < markersData.oil.length; i++) {
+                    var name = markersData.oil[i].name;
+                    var address = markersData.oil[i].address;
+                    var open = markersData.oil[i].open;
+                    var diy = markersData.oil[i].diy;
+                    var type = markersData.oil[i].type;
+
+                    var latlng = new google.maps.LatLng(markersData.oil[i].lat, markersData.oil[i].lon);
+                    var search = [markersData.oil[i].lat, markersData.oil[i].lon];
+                    if (isLocationFree(search)) {
+                        createConvenMarker(latlng, name, address, open, diy,0);
+                        // marker position is added to bounds variable
+                        bounds.extend(latlng);
+                        lookup.push(search);
+                    }
+                }
+            }
+
+            if(markersData.hasOwnProperty('toilet')){
+                for (var i = 0; i < markersData.toilet.length; i++) {
+                    var name = markersData.toilet[i].name;
+                    var address = markersData.toilet[i].address;
+                    var open = markersData.toilet[i].open;
+                    var diy = markersData.toilet[i].diy;
+                    var type = markersData.toilet[i].type;
+
+                    var latlng = new google.maps.LatLng(markersData.toilet[i].lat, markersData.toilet[i].lon);
+                    var search = [markersData.toilet[i].lat, markersData.toilet[i].lon];
+                    if (isLocationFree(search)) {
+                        createConvenMarker(latlng, name, address, open, diy,1);
+                        // marker position is added to bounds variable
+                        bounds.extend(latlng);
+                        lookup.push(search);
+                    }
+                }
+            }
+
+            if(markersData.hasOwnProperty('carFactory')){
+                for (var i = 0; i < markersData.carFactory.length; i++) {
+                    var name = markersData.carFactory[i].name;
+                    var address = markersData.carFactory[i].address;
+                    var open = markersData.carFactory[i].open;
+                    var diy = markersData.carFactory[i].diy;
+                    var type = markersData.carFactory[i].type;
+
+                    var latlng = new google.maps.LatLng(markersData.carFactory[i].lat, markersData.carFactory[i].lon);
+                    var search = [markersData.carFactory[i].lat, markersData.carFactory[i].lon];
+                    if (isLocationFree(search)) {
+                        createConvenMarker(latlng, name, address, open, diy,2);
+                        // marker position is added to bounds variable
+                        bounds.extend(latlng);
+                        lookup.push(search);
+                    }
+                }
+            }
+
+            if(markersData.hasOwnProperty('carWasher')){
+                for (var i = 0; i < markersData.carWasher.length; i++) {
+                    var name = markersData.carWasher[i].name;
+                    var address = markersData.carWasher[i].address;
+                    var open = markersData.carWasher[i].open;
+                    var diy = markersData.carWasher[i].diy;
+                    var type = markersData.carWasher[i].type;
+
+                    var latlng = new google.maps.LatLng(markersData.carWasher[i].lat, markersData.carWasher[i].lon);
+                    var search = [markersData.carWasher[i].lat, markersData.carWasher[i].lon];
+                    if (isLocationFree(search)) {
+                        createConvenMarker(latlng, name, address, open, diy,3);
+                        // marker position is added to bounds variable
+                        bounds.extend(latlng);
+                        lookup.push(search);
+                    }
+                }
+            }
+
+            if(markersData.hasOwnProperty('hospital')){
+                for (var i = 0; i < markersData.hospital.length; i++) {
+                    var name = markersData.hospital[i].name;
+                    var address = markersData.hospital[i].address;
+                    var open = markersData.hospital[i].open;
+                    var diy = markersData.hospital[i].diy;
+                    var type = markersData.hospital[i].type;
+
+                    var latlng = new google.maps.LatLng(markersData.hospital[i].lat, markersData.hospital[i].lon);
+                    var search = [markersData.hospital[i].lat, markersData.hospital[i].lon];
+                    if (isLocationFree(search)) {
+                        createConvenMarker(latlng, name, address, open, diy,4);
+                        // marker position is added to bounds variable
+                        bounds.extend(latlng);
+                        lookup.push(search);
+                    }
+                }
+            }
+
+            if(markersData.hasOwnProperty('police')){
+                for (var i = 0; i < markersData.police.length; i++) {
+                    var name = markersData.police[i].name;
+                    var address = markersData.police[i].address;
+                    var open = markersData.police[i].open;
+                    var diy = markersData.police[i].diy;
+                    var type = markersData.police[i].type;
+
+                    var latlng = new google.maps.LatLng(markersData.police[i].lat, markersData.police[i].lon);
+                    var search = [markersData.police[i].lat, markersData.police[i].lon];
+                    if (isLocationFree(search)) {
+                        createConvenMarker(latlng, name, address, open, diy,5);
+                        // marker position is added to bounds variable
+                        bounds.extend(latlng);
+                        lookup.push(search);
+                    }
+                }
+            }
+
+            if(markersData.hasOwnProperty('rest')){
+                for (var i = 0; i < markersData.rest.length; i++) {
+                    var name = markersData.rest[i].name;
+                    var address = markersData.rest[i].address;
+                    var open = markersData.rest[i].open;
+                    var diy = markersData.rest[i].diy;
+                    var type = markersData.rest[i].type;
+
+                    var latlng = new google.maps.LatLng(markersData.rest[i].lat, markersData.rest[i].lon);
+                    var search = [markersData.rest[i].lat, markersData.rest[i].lon];
+                    if (isLocationFree(search)) {
+                        createConvenMarker(latlng, name, address, open, diy,6);
+                        // marker position is added to bounds variable
+                        bounds.extend(latlng);
+                        lookup.push(search);
+                    }
+                }
+            }
+
+
+        }
+    }
+
+    function createConvenMarker(latlng, name, address, open, diy,type) {
+
+        var marker = new google.maps.Marker({
+            map: map,
+            position: latlng,
+            title: name,
+            icon: typeImage[type]
+        });
+
+        markers.push(marker);
+
+        google.maps.event.addListener(marker, 'click', function () {
+
+
+            //var iwContent = '<div id="iw_container">' + '<div class="iw_title"><b><font size="4">' + name +
+            //        '</font></b></div>' + '<img src="icon_location.png" style="height:30px; vertical-align:middle;"><font size="3">' +
+            //        address + '</font><br />' + '<div class="iw_content"><font size="3">' + '<img src="parknum.png" style="height:30px; vertical-align:middle;">' + "營業時間：" + open + '</font><br />'
+            //        + '<img src="coin.png" style="height:30px; vertical-align:middle;"><font size="3">' + "自助式服務：" + diy + '</font><br />' + '</div></div>' +
+            //        '<button id=goodbutton class=button onclick="goFunction()"><img src="ok.png"></button>&nbsp';
+
+            //infoWindow.setContent(iwContent);
+
+            //infoWindow.open(map, marker);
+            $('.modal-title').text(name);
+            $( ".exdetail" ).empty();
+            if(!(address  === undefined))
+                $( ".exdetail" ).append( "<p>地址：<span>"+address+"</span></p>" );
+            if(!(open  === undefined))
+                $( ".exdetail" ).append( "<p>營業時間：<span>"+open+"</span></p>" );
+            if(!(diy  === undefined))
+                $( ".exdetail" ).append( "<p>自助式服務：<span>有</span></p>");
+
+            $('#app-msg').modal('show');
+
+            var LatLng = this.position;
+            convenMarkerLat = LatLng.lat();
+            convenMarkerLon = LatLng.lng();
+
+        });
+    }
+
+    function displayPOIMarkers() {
+
+        // this variable sets the map bounds according to markers position
+        var bounds = new google.maps.LatLngBounds();
+        var markersData = JSON.parse(jsonData);
+        //console.log(markersData.length);
+        // for loop traverses markersData array calling createMarker function for each marker
+        for (var i = 0; i < markersData.length; i++) {
+            var latlng = new google.maps.LatLng(markersData[i].lat, markersData[i].lon);
+            var name = markersData[i].name;
+            var address = markersData[i].address;
+
+            var search = [markersData[i].lat, markersData[i].lon];
+            if (isLocationFree(search)) {
+                createPOIMarker(latlng, name, address);
+                // marker position is added to bounds variable
+                bounds.extend(latlng);
+                lookup.push(search);
+            }
+        }
+    }
+    function createPOIMarker(latlng, name, address) {
+        var parkIcon = new google.maps.MarkerImage("park_icon.png", null, null, null, new google.maps.Size(55, 55));
+
+        var parkIcon_r = new google.maps.MarkerImage("park_icon_red.png", null, null, null, new google.maps.Size(55, 55));
+        var marker = new google.maps.Marker({
+            map: map,
+            position: latlng,
+            title: name,
+            icon: parkIcon
+        });
+
+        markers.push(marker);
+    }
+    function isLocationFree(search) {
+        for (var i = 0, l = lookup.length; i < l; i++) {
+            if (lookup[i][0] === search[0] && lookup[i][1] === search[1]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function locError(error) {
+        // tell the user if the current position could not be located
+        alert("The current position could not be found!");
+    }
+
+    // current position of the user
+    function setCurrentPosition(pos) {
+        currentPositionMarker = new google.maps.Marker({
+            map: map,
+            position: new google.maps.LatLng(
+                pos.coords.latitude,
+                pos.coords.longitude
+            ),
+            icon: image,
+            title: "Current Position"
+        });
+        map.panTo(new google.maps.LatLng(
+            pos.coords.latitude,
+            pos.coords.longitude
+        ));
+    }
+
+    function displayAndWatch(position) {
+        // set current position
+        setCurrentPosition(position);
+        // watch position
+        watchCurrentPosition();
+    }
+
+    function watchCurrentPosition() {
+        var positionTimer = navigator.geolocation.watchPosition(
+            function(position) {
+                setMarkerPosition(currentPositionMarker, position);
+            });
+    }
+
+    function setMarkerPosition(marker, position) {
+        marker.setPosition(new google.maps.LatLng(
+            position.coords.latitude,
+            position.coords.longitude));
+    }
+
+    function initLocationProcedure() {
+        initialize();
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(displayAndWatch, locError);
+        } else {
+            // tell the user if a browser doesn't support this amazing API
+            alert("Your browser does not support the Geolocation API!");
+        }
+    }
+    
+    function setUrlGetData(data) {
+        globalUrl = data;
+        deleteMarkers();
+
+        position = map.getCenter();
+        lat = position.lat();
+        long = position.lng();
+
+        setTimeout(function(){
+            var dragConUrl = "https://ulcac3l8d4.execute-api.ap-northeast-1.amazonaws.com/beta/poiinfo?lon="+long+"&lat="+lat+"&range=500"+"&oil="+noil+"&toilet="+ntoilet+"&carFactory="+ncarFactory+"&hospital="+nhospital+"&police="+npolice+"&uuid="+uuid;
+            httpGetAsync(dragConUrl, function(status, response){
+                if(response.length>0){
+                    //alert(response);
+                    jsonData = response;
+                    displayConvenMarkers();
+                }
+              });
+        }, 10);
+    }
+
+    Object.size = function(obj) {
+        var size = 0, key;
+        for (key in obj) {
+            if (obj.hasOwnProperty(key)) size++;
+        }
+        return size;
+    };
+
+    // initialize with a little help of jQuery
+    $(document).ready(function() {
+        initLocationProcedure();
+    });
+
+  //從javascript傳回值給java
+    function getTempInfo(value,mintemp,maxtemp){
+        AndroidFunction.getTempInfo(value,mintemp,maxtemp);
+    } 
+  
+    //從javascript傳回值給java
+    function clickWeaather(speedlat,speed_lng){
+        AndroidFunction.weatherClick(speedlat,speed_lng);
+    }    
+
+    function goFunction() {
+        setTimeout(function () {
+            //$("#goodbutton").css("border","");
+            infoWindow.close();
+        }, 10);
+        
+        AndroidFunction.UpdateMyLoc_latlon();
+        mylat = AndroidFunction.MyLoc_lat();
+        mylon = AndroidFunction.MyLoc_lon();
+        //alert(mylat+","+mylon);
+        setGpsLatLon(mylat, mylon);
+    }
+
+    //test
+    function gotoThere(){
+        $('#app-msg').modal('hide');
+        console.log("goto ....");
+        //alert("goto ...");
+        goFunction();
+    }
+
+    function setGpsLatLon(lat, lon) {
+        clearMarkers();
+        currentLat = lat;
+        currentLon = lon;
+        var routedata;
+        setTimeout(function () {
+            //alert("parkMarkerLat="+parkMarkerLat+",parkMarkerLon="+parkMarkerLon+",currentLat="+lat+",currentLon="+lon);
+            var dragParkUrl = "https://ulcac3l8d4.execute-api.ap-northeast-1.amazonaws.com/beta/routeplan?srclon=" +
+                    currentLon + "&srclat=" + currentLat + "&dstlon=" + convenMarkerLon + "&dstlat=" + convenMarkerLat+"&uuid="+uuid;
+            parkJsonData = httpGet(dragParkUrl); //parking
+            var markersData = JSON.parse(parkJsonData);
+            var routepark = markersData.fastest.kml;
+            routedata =  markersData.fastest.time;
+            
+            if (!(nyLayer0 == null)) {
+                nyLayer0.setMap(null);
+            }
+            nyLayer1 = new google.maps.KmlLayer(
+                    routepark, {
+                        suppressInfoWindows: true,
+                        map: map,
+                        preserveViewport: true
+                    });
+        }, 10);
+        //alert("setGpsLatLon1");
+        var startmark = new google.maps.LatLng(currentLat,currentLon);
+        var endmark = new google.maps.LatLng(convenMarkerLat,convenMarkerLon);
+        markerStart = new google.maps.Marker({position: startmark, map: map, icon: pinstart});
+        markerFinal = new google.maps.Marker({position: endmark, map: map, icon: pinfinal});
+        map.setCenter(new google.maps.LatLng(currentLat,currentLon), 14);
+        alert("setGpsLatLon2");
+    }
+
+    // Sets the map on all markers in the array.
+    function setMapOnAll(map) {
+        for (var i = 0; i < markers.length; i++) {
+            markers[i].setMap(map);
+        }
+    }
+    // Removes the markers from the map, but keeps them in the array.
+    function clearMarkers() {
+        setMapOnAll(null);
+    }
+
+    // Shows any markers currently in the array.
+    function showMarkers() {
+        setMapOnAll(map);
+    }
+
+    // Deletes all markers in the array by removing references to them.
+    function deleteMarkers() {
+        clearMarkers();
+        markers = [];
+        lookup = [];
+    }
+
+    function setWeather(){
+    	//alert("setWeather");
+    	setTimeout(function(){
+            var position = map.getCenter();
+            var lat = position.lat();
+            var long = position.lng();
+            var ConUrl = "https://ulcac3l8d4.execute-api.ap-northeast-1.amazonaws.com/beta/weatherinfo?&lon="+long+"&lat="+lat+"&uuid="+uuid;
+            jsonData = httpGet(ConUrl);
+            //alert(jsonData);
+            var markersData = JSON.parse(jsonData);
+            valueT = markersData.value;
+            MinT = markersData.MinT;
+            MaxT = markersData.MaxT;
+            //alert(valueT+","+MinT+","+MaxT);
+            getTempInfo(valueT,MinT,MaxT);
+        }, 10);
+    }
+
+    function setMyLocation(){
+    	AndroidFunction.UpdateMyLoc_latlon(); 
+    	mylat = AndroidFunction.MyLoc_lat();
+        mylon = AndroidFunction.MyLoc_lon();
+        currentPositionMarker.setMap(null);
+        //alert(mylat+","+mylon);
+        var my = new google.maps.LatLng(mylat,mylon);
+        //var my = new google.maps.LatLng(23.675928,120.390419);
+        markerMy = new google.maps.Marker({position: my, map: map, icon: image});
+        //map.setCenter(new google.maps.LatLng(23.675928,120.390419), 14);
+        map.setCenter(new google.maps.LatLng(mylat,mylon), 14);
+
+        position = map.getCenter();
+            lat = position.lat();
+            long = position.lng();
+            //alert("dragend");
+
+//            setTimeout(function () {
+                //var Data1 = httpGet("https://ulcac3l8d4.execute-api.ap-northeast-1.amazonaws.com/beta/" + "roadinfo?period=0"+"&lon="+long+"&lat="+lat+"&range=1000");
+                httpGetAsync("https://ulcac3l8d4.execute-api.ap-northeast-1.amazonaws.com/beta/" + "roadinfo?period=0"+"&lon="+long+"&lat="+lat+"&range=1000"+"&uuid="+uuid,
+                function(status, response){
+                    Data1 = response;
+                    if(Data1 != Data_real_change)
+                    {
+                        Data_real_change = Data1;
+                        //alert(Data1);
+                        Data1 = Data1.replace('"', '');
+                        Data1 = Data1.replace('"', '');
+
+                        if(!(nyLayer0 == null)) {
+                            nyLayer0.setMap(null);
+                        }
+
+                        nyLayer0 = new google.maps.KmlLayer(Data1, {
+                            suppressInfoWindows: true,
+                            map: map,
+                            preserveViewport: true
+                        });
+                    }
+                });
+//            }, 300);
+    }
+
+
+    //google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
+</head>
+
+<body>
+    <div id="map-canvas" style="width: 100%;height: 100%"></div>
+    <div class="modal" id="app-msg">
+    <div class="modal-dialog app-msg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-times" aria-hidden="true"></i></button>
+                <h4 class="modal-title">中油古亭加油站</h4>
+            </div>
+            <div class="modal-body">
+                <div class="exdetail">
+                    <p>地址：<span>台北市民羅斯福路三段71號</span></p>
+                    <p>營業時間：<span>7:00～24:00</span></p>
+                    <p>自助式服務：<span>有</span></p>
+                </div>
+            </div>
+            <!--  modal body end -->
+            <!-- 按鈕 -->
+            <div class="modal-footer">
+                <a href="javascript:void(0)" class="btn lightblue" data-dismiss="modal">知道了</a>
+                <a href="javascript:gotoThere()" class="btn lightblue" >前往此處</a>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+    <div class="loader" id="nowloading1"></div>
+    <!-- MSG -->
+    <div class="modal" id="alertmessage1">
+        <div class="modal-dialog app-msg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-times" aria-hidden="true"></i></button>
+                    <h4 class="modal-title" >警告訊息</h4>
+                </div>
+                <div class="modal-body" >
+                    <p>
+                        載入交通路網圖層失敗。
+                    </p>
+                </div>
+                <!--  modal body end -->
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+</body>
+
+</html>

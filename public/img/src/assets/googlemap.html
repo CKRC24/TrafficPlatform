@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<style type="text/css">
+ html {
+  height: 100%
+ } 
+ body {
+  height: 100%;
+  margin: 0;
+  padding: 0
+ } 
+ #map_canvas {
+  height: 100%;
+  background-color:#fff !important
+ }
+ .labels {
+     color: white;
+     background-color: red;
+     font-family: "Lucida Grande", "Arial", sans-serif;
+     font-size: 12px;
+	 padding:1px;
+     text-align: center;
+     width: 46px;     
+     white-space: nowrap;
+     overflow: hidden;
+   }
+ .labelsstart{
+     color: white;
+     background-color: blue;
+     font-family: "Lucida Grande", "Arial", sans-serif;
+     font-size: 12px;
+	 padding:1px;
+     text-align: center;
+     width: 46px;     
+     white-space: nowrap;
+     overflow: hidden;
+   }
+ .labelsend{
+     color: white;
+     background-color: green;
+     font-family: "Lucida Grande", "Arial", sans-serif;
+     font-size: 12px;
+	 padding:1px;
+     text-align: center;
+     width: 46px;     
+     white-space: nowrap;
+     overflow: hidden;
+   } 
+</style>
+<script type="text/javascript"
+ src="http://maps.googleapis.com/maps/api/js?sensor=false">
+</script>
+ <script type="text/javascript" src="markerwithlabel.js"></script>
+<script type="text/javascript">
+	var map = null;
+	
+	//三種油耗顏色
+	var GreenDrivingColor = "#338855";
+	var NormalDrivingColor = "#AF8057";
+	var HardDrivingColor = "#FF0000";
+	
+	//所有要畫得路徑段
+	var CarPath = [];
+	//0 綠能駕駛 1 普通 2 油耗
+	var CarStyle = [];
+	
+	//Google map fit所有景點物件
+	var bounds = null;
+
+	var line2 = null;
+	var line = null;
+	var myMarker = null;
+	
+	var mapFinished = 0;
+	
+	function initialize() {
+		var mapOptions = {
+		center: new google.maps.LatLng(25.033146,121.5637343), //地圖中心點 
+		zoom: 7,
+		mapTypeId: google.maps.MapTypeId.ROADMAP,  //道路型態地圖
+		disableDefaultUI: true,
+		styles:[
+			{
+				"featureType": "all",
+				"elementType": "all",
+				"stylers": [
+					{
+						"saturation": -100
+					},
+					{
+						"gamma": 0.8
+					}
+				]
+			}]
+		};
+		map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);  //建立map的物件實體
+		
+		google.maps.event.addListenerOnce(map, 'tilesloaded', function(){
+			mapFinished = 1;
+			drawPath();
+   		 });
+	}
+
+	function initPath(data, type) 
+	{
+		CarPath.push([]);
+		var i;
+		for(i = 0; i < data.length; i++)
+		{
+			CarPath[CarPath.length-1].push(new google.maps.LatLng(data[i][0],data[i][1]));
+		}
+		CarStyle.push(type);
+	}
+	
+	var lr = 0;
+	function CreateMarker(atitle, alat, alng, leftOrRight)
+	{
+		if(mapFinished == 1 && map != null)
+		{
+			lr = leftOrRight;
+			
+			if(myMarker != null)
+				myMarker.setMap(null);
+				
+			var image = "";
+			
+			if(leftOrRight == 1)
+				image = "carLeft.png";
+			else if(leftOrRight == 0)
+				image = "carRight.png";
+			else if(leftOrRight == 2)
+				image = "null.png";
+				
+			var pos = new google.maps.LatLng(alat, alng);
+			myMarker = new MarkerWithLabel({
+			   position: pos,
+			   map: map,
+			   icon: image,
+			   draggable: false,
+			   zIndex: 1,
+			   labelText: atitle,
+			   labelClass: "labels", // the CSS class for the label
+			   labelStyle: {top: "-30px", left: "-3px"},
+			   labelZIndex: 2
+			});
+			
+			if(leftOrRight != 2 && map.getZoom() < 12)
+				map.setZoom(12);
+	    	map.setCenter(pos);
+	    }
+	}
+	
+	function visiblePoints(visible)
+	{
+		if(mapFinished == 1 && map != null)
+		{
+			if(myStartPoint != null && myEndPoint != null)
+			{
+				if(visible == 0)
+				{
+					 map.setOptions({
+				        disableDefaultUI: false
+				    });
+					myStartPoint.setVisible(false);
+					myEndPoint.setVisible(false);
+	
+					if(myMarker != null && map != null  && map.getZoom() < 12 && lr != 2)
+					{
+						myMarker.setVisible(true);
+						map.setZoom(12);
+	    				map.setCenter(myMarker.getPosition());
+					}
+				}else 
+				{
+					 map.setOptions({
+				        disableDefaultUI: true
+				    });
+					
+					myStartPoint.setVisible(true);
+					myEndPoint.setVisible(true);
+	
+					if(myMarker != null)
+						myMarker.setVisible(false);
+						
+					if(map != null)
+						map.fitBounds(bounds);
+				}
+			}
+		}
+	}
+	
+	var myStartPoint = null;
+	var start_pos = null;
+	var start_title = null;
+	
+	function CreateStart(atitle, alat, alng)
+	{
+		start_pos = new google.maps.LatLng(alat, alng);
+		start_title = atitle;
+	}
+	
+	var myEndPoint = null;
+	var end_pos = null;
+	var end_title = null;
+	
+	function CreateEnd(atitle, alat, alng)
+	{
+		end_pos = new google.maps.LatLng(alat, alng);
+		end_title = atitle;
+	}
+	
+	function drawPath()
+	{
+		if(mapFinished == 1 && map != null)
+		{
+			bounds = new google.maps.LatLngBounds();
+			
+			if(line2 != null)
+			{
+				line2.setMap(null);
+				line.setMap(null);	
+			}
+				
+			for(var i = 0; i < CarPath.length; i++)
+			{
+				var color = "#ff0000";
+				
+				if(CarStyle[i] == 1)
+					color = GreenDrivingColor;
+				else if(CarStyle[i] == 0)
+					color = NormalDrivingColor;
+				else if(CarStyle[i] >= 2)
+					color = HardDrivingColor;
+					
+				line2 = new google.maps.Polyline({
+					path: CarPath[i],
+					strokeColor: "#000000",
+					strokeWeight: 5,
+					map: map
+				});	
+				
+				line = new google.maps.Polyline({
+					path: CarPath[i],
+					strokeColor: color,
+					strokeWeight: 3,
+					map: map
+				});	
+	
+				for(var j = 0; j < CarPath[i].length; j++)
+					bounds.extend(CarPath[i][j]);
+			}
+			
+			map.fitBounds(bounds);
+			
+			if(start_pos != null)
+			{
+				myStartPoint = new MarkerWithLabel({
+				   position: start_pos,
+				   map: map,
+				   icon: "startpoint.png",
+				   draggable: false,
+				   zIndex: 1,
+				   labelText: start_title,
+				   labelClass: "labelsstart", // the CSS class for the label
+				   labelStyle: {top: "-30px", left: "-3px"},
+				   labelZIndex: 2
+				});
+			}
+			
+			if(end_pos != null)
+			{
+				myEndPoint = new MarkerWithLabel({
+				   position: end_pos,
+				   map: map,
+				   icon: "endpoint.png",
+				   draggable: false,
+				   zIndex: 1,
+				   labelText: end_title,
+				   labelClass: "labelsend", // the CSS class for the label
+				   labelStyle: {top: "-30px", left: "-3px"},
+				   labelZIndex: 2
+				});
+			}
+		}
+	}
+</script>
+</head>
+<body onload="initialize()">
+ <div id="map_canvas" style="width: 100%; height: 100%"></div>
+ <div id="123"></div>
+</body>
+</html>

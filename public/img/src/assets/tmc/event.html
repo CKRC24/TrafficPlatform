@@ -1,0 +1,231 @@
+  <!DOCTYPE html>
+<html>
+  <head>
+    <title>Localizing the Map</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      html, body, #map-canvas {
+        height: 100%;
+        margin:0px;
+        padding: 0px
+      }
+#event_button{
+          position:absolute;
+          bottom:2%;
+          color: #fff;
+          background-color: #7E1922;
+          padding: 11px;
+
+          border: 1px solid transparent;
+          border-radius: 8px;
+          box-sizing: border-box;
+          -moz-box-sizing: border-box;
+
+          outline: none;
+          alignment-baseline:central;
+          width:auto;
+          height:auto;
+          left:10%;
+          text-align:center;
+          text-decoration:none;
+          margin:0px auto;}
+#park_button{
+          position:absolute;
+          bottom:2%;
+          color: #fff;
+          background-color: #7E1922;
+          padding: 11px;
+
+          border: 1px solid transparent;
+          border-radius: 8px;
+          box-sizing: border-box;
+          -moz-box-sizing: border-box;
+
+          outline: none;
+          alignment-baseline:central;
+          width:auto;
+          height:auto;
+          left:30%;
+          text-align:center;
+          text-decoration:none;
+          margin:0px auto;}
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&language=zh-TW"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>   
+    <script>
+var map;
+var infoWindow;
+var jsonData;
+var parkJsonData;
+var mylat;
+var mylon;
+
+//lati,longi  //25.0346882,121.5167491
+function initialize() {
+    mylat = AndroidFunction.MyLoc_lat();
+    mylon = AndroidFunction.MyLoc_lon();
+    jsonData = AndroidFunction.GetJson();
+    parkJsonData = AndroidFunction.GetParkJson();
+
+	  var latlon = new google.maps.LatLng(mylat,mylon);
+
+	  var mapOptions = {
+    	zoom: 16,
+    	center: latlon//new google.maps.LatLng(25.0346882,121.5167491)
+  	}; 
+  	map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
+    infoWindow = new google.maps.InfoWindow();  
+
+  	//displayMarkers();
+    var markerMy = new google.maps.Marker({
+        position: latlon,
+        map: map,
+        icon:"iam.png"
+      });
+    markerMy.setMap(map); 
+    var nyLayer = new google.maps.KmlLayer(
+                  'http://140.92.88.92:38080/TrafficPlatform/traffic_condition.kml',
+                  {
+                      suppressInfoWindows: true,
+                      map: map,
+                      preserveViewport: true
+                  });
+}
+
+function eventFunction() {
+    displayMarkers();
+}
+
+function parkFunction(){
+    displayParkMarkers();
+}
+
+function displayMarkers(){
+
+   // this variable sets the map bounds according to markers position
+   var bounds = new google.maps.LatLngBounds();
+   
+   var obj = JSON.parse(jsonData); 
+   
+   for (var i = 0; i < obj.length; i++){
+      var latlng = new google.maps.LatLng(obj[i].latitude, obj[i].longitude);
+      //var type = obj[i].type;
+      var comment = obj[i].comment;
+      var happen_time = obj[i].happen_time;
+      createMarker(latlng, comment,happen_time);
+
+      // marker position is added to bounds variable
+      bounds.extend(latlng);  
+   }    
+
+}
+
+// This function creates each marker and it sets their Info Window content
+function createMarker(latlng, comment,happen_time){
+   var parkIcon = new google.maps.MarkerImage("cone_pin.png", null, null, null, new google.maps.Size(48,72));
+    
+
+   	var marker = new google.maps.Marker({
+      map: map,
+      position: latlng,
+      //title: type,
+      icon:parkIcon
+  	});
+
+   //console.log(latlng+","+comment+","+happen_time);
+   google.maps.event.addListener(marker, 'click', function() {
+      
+      // Creating the content to be inserted in the infowindow
+      var iwContent = '<div id="iw_container">' +
+             '<img src="icon_location.png" style="height:30px; vertical-align:middle;"><font size="3">' + happen_time + '</font><br />' + 
+         '<div class="iw_content"><font size="3">' + '<img src="icon_location.png" style="height:30px; vertical-align:middle;">' +comment + '</font><br />'+'</div></div>';
+      
+      // including content to the Info Window.
+      infoWindow.setContent(iwContent);
+
+      // opening the Info Window in the current map and at the current marker location.
+      infoWindow.open(map, marker);
+   });
+}
+
+
+function displayParkMarkers(){
+
+   // this variable sets the map bounds according to markers position
+   var bounds = new google.maps.LatLngBounds();
+   
+   var markersData = JSON.parse(parkJsonData);
+   //console.log(markersData.length);
+   // for loop traverses markersData array calling createMarker function for each marker 
+   for (var i = 0; i < markersData.length; i++){
+      var latlng = new google.maps.LatLng(markersData[i].latitude, markersData[i].longitude);
+      var name = markersData[i].name;
+      var address = markersData[i].address;
+      var available = markersData[i].available;
+      var payex = markersData[i].payex;
+
+      createParkMarker(latlng, name, address,available,payex);
+
+      // marker position is added to bounds variable
+      bounds.extend(latlng);   
+
+   }
+}
+function createParkMarker(latlng, name, address, available,payex){
+   var parkIcon = new google.maps.MarkerImage("park_icon.png", null, null, null, new google.maps.Size(55,55));
+   
+   var parkIcon_r = new google.maps.MarkerImage("park_icon_red.png", null, null, null, new google.maps.Size(55,55));   
+   var marker = new google.maps.Marker({
+      map: map,
+      position: latlng,
+      title: name,
+      icon:parkIcon
+  	});
+
+   // if(name!="嘟嘟房西門中華站停車場"){
+   // 	var marker = new google.maps.Marker({
+   //    map: map,
+   //    position: latlng,
+   //    title: name,
+   //    icon:parkIcon
+  	// });
+
+   // }
+   // else{
+   // 	var marker = new google.maps.Marker({
+   //    map: map,
+   //    position: latlng,
+   //    title: name,
+   //    icon:parkIcon_r
+  	// });
+
+   // }
+
+   google.maps.event.addListener(marker, 'click', function() {
+      
+      // Creating the content to be inserted in the infowindow
+      var iwContent = '<div id="iw_container">' +
+            '<div class="iw_title"><b><font size="4">' + name + '</font></b></div>' +
+             '<img src="icon_location.png" style="height:30px; vertical-align:middle;"><font size="3">' + address + '</font><br />' + 
+         '<div class="iw_content"><font size="3">' + '<img src="parknum.png" style="height:30px; vertical-align:middle;">' + "剩餘車位："+available + '</font><br />' +'<img src="coin.png" style="height:30px; vertical-align:middle;"><font size="3">' + "付費方式："+payex + '</font><br />' +'</div></div>';
+      
+      // including content to the Info Window.
+      infoWindow.setContent(iwContent);
+
+      // opening the Info Window in the current map and at the current marker location.
+      infoWindow.open(map, marker);
+   });
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
+
+    </script>
+  </head>
+  <body>
+    <div id="map-canvas" ></div>
+    <div id="myDiv"></div>
+    <button id="event_button" onclick="eventFunction()"><img src="event.png"></button>
+    <button id="park_button" onclick="parkFunction()"><img src="park_btn.png"></button>
+  </body>
+</html>

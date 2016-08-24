@@ -1,0 +1,137 @@
+.simple-data-grid {
+    border-collapse: collapse;
+}
+
+.simple-data-grid thead th {
+    background: #000000 url("images/ui-bg_inset-soft_25_000000_1x100.png") 50% bottom repeat-x;
+    background-image: url("images/ui-bg_inset-soft_25_000000_1x100.png");
+    background-position-x: 50%;
+    background-position-y: bottom;
+    background-size: initial;
+    background-repeat-x: repeat;
+    background-repeat-y: no-repeat;
+    background-attachment: initial;
+    background-origin: initial;
+    background-clip: initial;
+    background-color: rgb(0, 0, 0);
+}
+
+.simple-data-grid tbody tr td:hover {
+    background: #0078a3 url("images/ui-bg_glass_40_0078a3_1x400.png") 50% 50% repeat-x;
+    background-image: url("images/ui-bg_glass_40_0078a3_1x400.png");
+    background-position-x: 50%;
+    background-position-y: 50%;
+    background-size: initial;
+    background-repeat-x: repeat;
+    background-repeat-y: no-repeat;
+    background-attachment: initial;
+    background-origin: initial;
+    background-clip: initial;
+    background-color: rgb(0, 120, 163);
+}
+
+.simple-data-grid thead th {
+    font-weight: bold;
+    padding: 0.5em;
+    border-right: solid 1px #ccc;
+    text-align: left;
+    white-space: nowrap;
+    vertical-align: top;
+}
+
+.simple-data-grid thead th a {
+    color: #000;
+    text-decoration: none;
+    white-space: nowrap;
+    vertical-align: top;
+}
+
+.simple-data-grid thead th a .sdg-sort {
+    margin-left: 1em;
+    font-size: 12px;
+}
+
+.simple-data-grid thead .sdg-sorted:hover {
+    cursor: pointer;
+}
+
+.simple-data-grid thead th:last-child {
+    border-right: none;
+}
+
+.simple-data-grid thead th:hover {
+    //border: 1px solid #59b4d4;
+    background: #0078a3 url("images/ui-bg_glass_40_0078a3_1x400.png") 50% 50% repeat-x;
+    background-image: url("images/ui-bg_glass_40_0078a3_1x400.png");
+    background-position-x: 50%;
+    background-position-y: 50%;
+    background-size: initial;
+    background-repeat-x: repeat;
+    background-repeat-y: no-repeat;
+    background-attachment: initial;
+    background-origin: initial;
+    background-clip: initial;
+    background-color: rgb(0, 120, 163);
+}
+
+.simple-data-grid tbody td {
+    padding: 0.5em;
+    vertical-align: top;
+}
+
+.simple-data-grid tbody tr {
+    //border-bottom: solid 1px #ddd;
+}
+
+.simple-data-grid tbody .sdg-selected,
+.simple-data-grid tbody .sdg-selected:hover {
+    //border: 1px solid #59b4d4;
+    background: #0078a3 url("images/ui-bg_glass_40_0078a3_1x400.png") 50% 50% repeat-x;
+    background-image: url("images/ui-bg_glass_40_0078a3_1x400.png");
+    background-position-x: 50%;
+    background-position-y: 50%;
+    background-size: initial;
+    background-repeat-x: repeat;
+    background-repeat-y: no-repeat;
+    background-attachment: initial;
+    background-origin: initial;
+    background-clip: initial;
+    background-color: rgb(0, 120, 163);
+}
+
+.simple-data-grid tfoot td {
+    padding: 0.5em;
+}
+
+.simple-data-grid tfoot .sdg-pagination {
+    background: #eaeaea;
+    text-align: center;
+}
+
+.simple-data-grid tfoot .sdg-pagination ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    float: none;
+    display: inline-block;
+    overflow: hidden;
+}
+
+.simple-data-grid tfoot .sdg-pagination li {
+    float: left;
+}
+
+.simple-data-grid tfoot .sdg-pagination a {
+    padding: 0 0.5em;
+}
+
+.simple-data-grid tfoot .sdg-pagination li.sdg-disabled a,
+.simple-data-grid tfoot .sdg-pagination li.sdg-disabled a:hover,
+.simple-data-grid tfoot .sdg-pagination li.sdg-active a,
+.simple-data-grid tfoot .sdg-pagination li.sdg-active a:hover {
+    cursor: default;
+    text-decoration: none;
+    color: #000;
+}
+
+*/
