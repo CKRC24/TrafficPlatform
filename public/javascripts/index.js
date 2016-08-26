@@ -1,13 +1,5 @@
 var data = null;
-/*
-var trafficFlow = false;
-var event = false;
-var parking = false;
-var cms = false;
-var camera = false;
-var tpeg = false;
-var vd = false;
-*/
+
 var mapFlags = {
     trafficFlow: false,
     event: false,
@@ -43,8 +35,6 @@ var modal = {
             modal_exdetail += String.format("<p>{0}<span>{1}</span></p>", value.name, value.value);
         });
         $('#modal-wrap').find('.exdetail').prop('innerHTML', modal_exdetail)
-
-
     }
 }
 
@@ -79,7 +69,6 @@ var json_paths = {
         TaipeiVD: "/json/TaipeiVD.json",
         TrafficEvent: "/json/TrafficEvent.json",
         convenient: "/json/convenient2.json",
-        //trafficFlow: "json/traffic_condition.kml"
         trafficFlow: "http://140.92.88.92:38080/TrafficPlatform/traffic_condition.kml",
         roadinfo: "roadinfo?period=0&lon=121.556916&lat=25.057415&uuid=1234567777",
         roadSpeed: "roadspeed?uuid=1234567777&lon=121.556916&lat=25.057415",
@@ -119,7 +108,6 @@ var json_paths = {
             console.log('TrafficEvent:');
             console.log(targetUrl);
             return targetUrl;
-            //return String.format("http://52.196.208.172:8080/TrafficEvent/TrafficEvent2?lon={0}&lat={1}&range=5000", myCenter.lat, myCenter.lng);
         },
         convenient: function() {
             var period = timetype.indexOf(formItems.timetype);
@@ -139,11 +127,9 @@ var json_paths = {
             console.log(path);
             var targetUrl = BaseUrl + path;
             return targetUrl;
-            //return String.format("/roadinfo?period=0&lon=121.556916&lat=25.057415&uuid=1234567777");
         },
         //json_paths.dynamic.roadSpeed
         roadSpeed: function(latLng) {
-            //var path = "/roadspeed?uuid=1234567777&lon=121.556916&lat=25.057415";
             var path = String.format("roadspeed?uuid=1234567777&lat={0}&lon={1}", latLng.lat(), latLng.lng())
             var targetUrl = BaseUrl + path;
             return targetUrl;
@@ -164,15 +150,12 @@ var json_paths = {
         }
     }
 };
-
-
-var json_path = clone(json_paths.instant);
+var json_path = json_paths.instant;
+console.log(json_path);
 var iconSize = new google.maps.Size(29, 39);
 var iconAnchor = new google.maps.Point(14.5, 37);
-var eventMarkerSize = new google.maps.Size(42, 46);
+var eventMarkerSize = new google.maps.Size(42, 50);
 var eventMarkerAnchor = new google.maps.Point(21, 46);
-//var speedMarkerSize = new google.maps.Size(34, 47);
-//var speedMarkerAnchor = new google.maps.Point(17, 47);
 var parkingMarkerSize = new google.maps.Size(34, 47);
 var parkingMarkerAnchor = new google.maps.Point(17, 47);
 var parkingLabelAnchor = new google.maps.Point(20, 37);
@@ -181,9 +164,7 @@ var speedMarkerAnchor = new google.maps.Point(17, 38);
 var speedLabelAnchor = new google.maps.Point(20, 29);
 
 
-
 var markerIcons = {
-    //event: "https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=E|d94e59|444444",
     event: {
         url: "/img/markers/sign01@2x.png",
         scaledSize: eventMarkerSize
@@ -222,7 +203,6 @@ var markerIcons = {
         scaledSize: eventMarkerSize
     }],
     parking: "https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=P|5796cf|444444",
-
     cms: "https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=S|58ac45|444444",
     camera: "https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=C|0099ff|444444",
     vd: "https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=V|ff66cc|444444",
@@ -297,14 +277,14 @@ var markerIcons = {
     }]
 };
 
-function clone(obj) {
+/*function clone(obj) {
     if (obj == null || typeof(obj) != 'object')
         return obj;
     var temp = obj.constructor();
     for (var key in obj)
         temp[key] = clone(obj[key]);
     return temp;
-}
+}*/
 
 google.maps.Map.prototype.clearOverlays = function() {
     if (ctaLayer != null) {
@@ -328,7 +308,6 @@ google.maps.Map.prototype.panToWithOffset = function(latlng, offsetX, offsetY) {
 };
 
 function getConvPar() {
-
     var checkedValues = getCheckedValues('rdo-conv');
     var paramString = "";
     if (checkedValues.indexOf("all") > -1) {
@@ -364,7 +343,6 @@ function setParkingInfo() {
         $('#park').addClass('enabled');
         parking = true;
     }
-
     redraw();
 }
 
@@ -859,7 +837,7 @@ var mapShow = {
     convenient: function() {
         //var parking_json_url = "http://140.92.88.92:38080/ParkingSearch/ParkingSearch?lon=121.564561&amp;lat=25.033327&amp;range=50000";
         //var parking_json_url = "http://140.92.88.92:38080/ParkingSearch/ParkingSearch?lon=121.564561&lat=25.033327&range=2000";
-        var AllValues = getCheckedRealValues('rdo-conv');
+        var AllValues = getCheckedValues('rdo-conv');
 
         $.getJSON(json_path.convenient, function(json) {
             $.each(AllValues, function(index, value) {
@@ -1113,10 +1091,10 @@ function drawDataTable() {
     //alert(infoCat);
     switch (infoCat) {
         case 'county':
-            $('#coverage-table').drawTable('json/county.json');
+            $('#coverage-table').drawTable('/json/county.json');
             break;
         case 'roads':
-            $('#coverage-table').drawTable('json/road.json');
+            $('#coverage-table').drawTable('/json/road.json');
             break;
     }
 }
@@ -1134,28 +1112,19 @@ function getCheckedValues(name) {
     return checkedValues;
 }
 
-function getAllCheckValues(name) {
+function getAllValues(name) {
     var allValues = $("input[name='" + name + "']").map(function() {
-        return this.value;
+        if (this.value !== "all")
+            return this.value;
     }).get();
     return allValues;
 }
 
-function getAllValues(name) {
-    var AllValues = getAllCheckValues(name);
-    var valuesWithoutAll = jQuery.grep(AllValues, function(a) {
-        return (a !== "all");
+function getCheckedValuesWithoutAll(name) {
+    var withoutAll = jQuery.grep(getCheckedValues(name), function(value) {
+        return (value !== "all");
     });
-    return valuesWithoutAll;
-}
-
-function getCheckedRealValues(name) {
-    var checkedValues = getCheckedValues(name);
-    if (checkedValues.indexOf("all") > -1) {
-        return getAllValues(name);
-    } else {
-        return checkedValues;
-    }
+    return withoutAll;
 }
 
 $(window).load(function() {
@@ -1297,24 +1266,31 @@ $(document).ready(function() {
     });
 
     $("input[name='rdo-conv']").on('change', function(e) {
-        //$('#flipswitch').switchButton({checked:true});
         var checkedValues = getCheckedValues('rdo-conv');
+        var withoutAll = getCheckedValuesWithoutAll('rdo-conv');
         if (checkedValues.indexOf("all") > -1) {
-            $('#flipswitch').switchButton({ checked: true });
-            $('input[name="rdo-conv"]').attr("checked", true);
-            $('input[name="rdo-conv"]').checkboxradio('refresh');
+            $('#flipswitch').switchButton({
+                checked: true
+            });
+            $('input[name="rdo-conv"]').attr("checked", true).checkboxradio('refresh');
         } else if (checkedValues.length > 0) {
-            $('#flipswitch').switchButton({ checked: true });
+            $('#flipswitch').switchButton({
+                checked: true
+            });
         } else {
-            $('#flipswitch').switchButton({ checked: false });
+            $('#flipswitch').switchButton({
+                checked: false
+            });
         }
         if ($(this).attr("value") == "all") {
             if ($(this).attr("checked") !== "checked") {
-                $('#flipswitch').switchButton({ checked: false });
-                $('input[name="rdo-conv"]').attr("checked", false);
-                $('input[name="rdo-conv"]').checkboxradio('refresh');
+                $('#flipswitch').switchButton({
+                    checked: false
+                });
+             $('input[name="rdo-conv"]').attr("checked", false).checkboxradio('refresh');
             }
         }
+        checkedValues = getCheckedValues('rdo-conv')
         console.log(checkedValues);
     });
 
@@ -1391,20 +1367,20 @@ $(document).ready(function() {
     $('#road-submit-button').click(btn_click);
     $('#road-submit-button2').click(btn_click);
 
-$('#modal-btn-close').click(function() {
-    $('#modal-wrap').addClass('hidden');
-})
+    $('#modal-btn-close').click(function() {
+        $('#modal-wrap').addClass('hidden');
+    })
 
-$('#modal-dismiss').click(function() {
-    $('#modal-wrap').addClass('hidden');
-})
+    $('#modal-dismiss').click(function() {
+        $('#modal-wrap').addClass('hidden');
+    })
 
-$('#modal-goto').click(function() {
-    $('#modal-wrap').addClass('hidden');
-    map.panTo(markerPosition);
-})
+    $('#modal-goto').click(function() {
+        $('#modal-wrap').addClass('hidden');
+        map.panTo(markerPosition);
+    })
 
-var currentDate = $(".selector").datepicker("getDate");
+    var currentDate = $(".selector").datepicker("getDate");
 });
 
 
@@ -1456,7 +1432,8 @@ function btn_click() {
     google.maps.Map.prototype.clearOverlays();
 
     if (formItems.timetype === "history") {
-        json_path = clone(json_paths.history);
+        json_path = json_paths.history;
+        console.log(json_path);
         if (mapFlags.trafficFlow) {
             mapShow.trafficFlow();
         }

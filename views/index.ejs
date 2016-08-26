@@ -13,11 +13,11 @@
     <link rel="stylesheet" type="text/css" href="/stylesheets/css/simple.datagrid.css" />
     <link rel="stylesheet" type="text/css" href="/stylesheets/css/jquery.switchButton.css" />
     <link rel="stylesheet" type="text/css" href="/stylesheets/css/jquery-ui-smoothness.css" />
-    <script  src="/js/bootstrap.min.js"></script>
-    <script  src="/javascripts/jquery-1.7.2.js" aync></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script  src="/javascripts/jquery-ui-1.12.0.js" aync></script>
     <script  src="/javascripts/simple.datagrid.js" aync></script>
     <script  src="/javascripts/jquery.switchButton.js" aync></script>
+    <script  src="/js/bootstrap.min.js"></script>
 </head>
 
 <body>
@@ -166,10 +166,6 @@
                                             <input type="checkbox" name="rdo-conv" id="rdo-conv-7" value="police">
                                             <label for="rdo-conv-8">洗車據點</label>
                                             <input type="checkbox" name="rdo-conv" id="rdo-conv-8" value="carWasher">
-                                            <label for="rdo-conv-9" class="hidden">易肇事路段</label>
-                                            <input type="checkbox" name="rdo-conv" id="rdo-conv-9" value="alarmRoad">
-                                            <label for="rdo-conv-10" class="hidden">大眾運輸</label>
-                                            <input type="checkbox" name="rdo-conv" id="rdo-conv-10" value="public">
                                         </fieldset>
                                         <div class="left-col-but-wrap">
                                             <div id="but-wrap">
@@ -231,7 +227,7 @@
                                                             <a id="modal-dismiss" href="javascript:void(0)" class="btn lightblue" data-dismiss="modal">知道了</a>
                                                             <a id="modal-goto" href="#" class="btn lightblue">前往此處</a>
                                                         </div>
-                                                        <div id="modal-pointer" class="hidden">
+                                                        <div id="modal-pointer" class="">
                                                             <div class="pointer-left-outer">
                                                                 <div class="pointer-left-inner"></div>
                                                             </div>
@@ -256,7 +252,7 @@
                 <div id="row-bot" class="a-table-row">
                     <div class="inner-wrap a-table-cell">
                         <div id="grid-wrap">
-                            <table id="demo-table" data-url="../json/grid.json" class="hidden">
+                            <table id="demo-table" data-url="/json/grid.json" class="hidden">
                                 <thead>
                                     <tr>
                                         <th data-key="基隆市">基隆市</th>
@@ -281,22 +277,7 @@
             </div>
         </div>
     </div>
-    <div class="hidden">
-        <img src="../img/btn/btn_hover01.png" />
-        <img src="../img/btn/btn_hover02.png" />
-        <img src="../img/btn/btn_hover03.png" />
-        <img src="../img/btn/btn_hover04.png" />
-        <img src="../img/btn/btn_hover05.png" />
-        <img src="../img/btn/btn_hover06.png" />
-        <img src="../img/btn/btn_hover07.png" />
-        <img src="../img/btn/btn_enabled01.png" />
-        <img src="../img/btn/btn_enabled02.png" />
-        <img src="../img/btn/btn_enabled03.png" />
-        <img src="../img/btn/btn_enabled04.png" />
-        <img src="../img/btn/btn_enabled05.png" />
-        <img src="../img/btn/btn_enabled06.png" />
-        <img src="../img/btn/btn_enabled07.png" />
-    </div>
+
     <div id="confirm-dialog" title="確認">
         <p>This is the default dialog which is useful for displaying information. The dialog window can be moved, resized and closed with the 'x' icon.</p>
     </div>
