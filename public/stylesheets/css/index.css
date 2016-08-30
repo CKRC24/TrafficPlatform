@@ -1,9 +1,9 @@
 @charset "UTF-8";
 @import url(font-awesome.min.css);
 @CHARSET "UTF-8";
-html,
 body,
-div {
+div,
+html {
   margin: 0;
   padding: 0;
   font-family: Tahoma, Helvetica, Arial, "ctb_wcl-06", "Microsoft Yahei", "微软雅黑", STXihei, "华文细黑", sans-serif;
@@ -15,17 +15,18 @@ div {
 a {
   text-decoration: none; }
 
-html,
+#map_canvas,
 body,
-#map_canvas {
-  height: 100%; }
+html {
+  height: 100%;
+  position: relative; }
 
 .col-left .ui-controlgroup {
   display: table-row; }
 
 #tabs {
-  border-radius: 0px;
-  border: 0px; }
+  border-radius: 0;
+  border: 0; }
 
 body .ui-widget,
 body .ui-widget input {
@@ -41,23 +42,20 @@ body .ui-menu {
   background-color: transparent; }
 
 #tabs.ui-tabs {
-  padding: 0px; }
+  padding: 0; }
 
 #tabs li {
   margin-left: 20px; }
 
 #tabs ul {
-  border-radius: 0px;
-  border: 0px; }
+  border-radius: 0;
+  border: 0; }
 
 #form-wrap .ui-checkboxradio-label {
   width: 90px; }
 
 #but-wrap {
-  margin-top: 10px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 10px; }
+  margin: 10px auto; }
 
 #road-submit-button,
 #road-submit-button2 {
@@ -82,18 +80,18 @@ body .ui-menu {
 
 #coverage-field {
   vertical-align: bottom;
-  bottom: 0px; }
+  bottom: 0; }
 
 fieldset.ui-controlgroup {
   display: table-row; }
 
 @font-face {
   font-family: "ctb_wcl-06";
-  src: local(" "), url(/fonts/ctb_wcl-06.ttf) format("truetype"); }
+  src: local(" "), url("/fonts/ctb_wcl-06.ttf") format("truetype"); }
 
 @font-face {
   font-family: "ctb_c_wcl-06";
-  src: local(" "), url(/fonts/ctb_c_wcl-06.ttf) format("truetype"); }
+  src: local(" "), url("/fonts/ctb_c_wcl-06.ttf") format("truetype"); }
 
 legend {
   color: #0099ff; }
@@ -130,7 +128,8 @@ legend {
 
 #col-right {
   position: relative;
-  width: calc(100% - 320px); }
+  width: calc(100% - 320px);
+  height: 100%; }
 
 .cells {
   display: table-cell; }
@@ -191,7 +190,7 @@ legend {
   top: 0;
   width: 750px;
   height: 85px;
-  border: 0px solid #fff;
+  border: 0 solid #fff;
   margin: auto; }
 
 /*
@@ -311,7 +310,7 @@ legend {
 #type-selector {
   color: #fff;
   background-color: #4d90fe;
-  padding: 5px 11px 0px 11px; }
+  padding: 5px 11px 0; }
 
 #type-selector label {
   font-family: Roboto;
@@ -319,7 +318,7 @@ legend {
   font-weight: 300; }
 
 .switch-button-background {
-  margin-left: 0px; }
+  margin-left: 0; }
 
 #map-panel {
   background-color: #CCCCCC;
@@ -334,7 +333,7 @@ legend {
   font-weight: bold;
   text-align: center;
   width: 40px;
-  border: 0px;
+  border: 0;
   white-space: nowrap; }
 
 .labels-parking {
@@ -345,7 +344,7 @@ legend {
   font-weight: normal;
   text-align: center;
   width: 40px;
-  border: 0px;
+  border: 0;
   white-space: nowrap; }
 
 .text-right {
@@ -390,10 +389,10 @@ legend {
 .modal-header {
   background: #545454;
   color: #fff;
-  padding: 8px 8px; }
+  padding: 8px; }
 
 .modal-footer {
-  padding: 0px;
+  padding: 0;
   text-align: right;
   border-top: 1px solid #dadada;
   display: block;
@@ -426,6 +425,7 @@ legend {
   color: #fff; }
 
 #modal-wrap {
+  -moz-box-sizing: border-box;
   position: absolute;
   top: 0;
   bottom: 0;
@@ -435,17 +435,16 @@ legend {
   overflow: hidden;
   padding-bottom: 30px;
   -webkit-overflow-scrolling: touch;
-  width: 90%;
+  width: 100%;
   min-width: 300px;
   max-width: 400px;
-  display: inline;
-  margin: auto;
-  vertical-align: middle;
+  margin-left: auto;
+  margin-right: auto;
   display: table; }
 
 .modal-header .close {
   color: #fff;
-  text-shadow: 0 0px 0 #fff;
+  text-shadow: 0 0 0 #fff;
   opacity: 1;
   font-size: 1.3em;
   font-weight: 100;
@@ -469,7 +468,7 @@ legend {
 
 .modal-header .close {
   color: #fff;
-  text-shadow: 0 0px 0 #fff;
+  text-shadow: 0 0 0 #fff;
   opacity: 1;
   font-size: 1.3em;
   font-weight: 100;
@@ -484,7 +483,7 @@ legend {
   text-decoration: none;
   cursor: pointer;
   filter: alpha(opacity=50);
-  opacity: .5; }
+  opacity: 0.5; }
 
 button.close {
   -webkit-appearance: none;
@@ -501,10 +500,10 @@ button.close {
   color: #000;
   text-shadow: 0 1px 0 #fff;
   filter: alpha(opacity=20);
-  opacity: .2; }
+  opacity: 0.2; }
 
-.fa-remove:before,
 .fa-close:before,
+.fa-remove:before,
 .fa-times:before {
   font-family: 'FontAwesome';
   content: "\f00d"; }
@@ -535,7 +534,7 @@ button.close {
   position: absolute;
   left: 6px;
   transform: skewX(22.6deg);
-  transform-origin: 0px 0px 0px;
+  transform-origin: 0 0 0;
   height: 24px;
   width: 10px;
   box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2);
@@ -553,9 +552,9 @@ button.close {
 
 .pointer-right-inner {
   position: absolute;
-  left: 0px;
+  left: 0;
   transform: skewX(-22.6deg);
-  transform-origin: 10px 0px 0px;
+  transform-origin: 10px 0 0;
   height: 24px;
   width: 10px;
   box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2);
@@ -586,45 +585,45 @@ legend {
   margin-top: 5px; }
 
 #traffic-button {
-  background-image: url(/img/btn/btn01.png); }
+  background-image: url("/img/btn/btn01.png"); }
 
 #traffic-button:hover {
-  background-image: url(/img/btn/btn_hover01.png); }
+  background-image: url("/img/btn/btn_hover01.png"); }
 
 #traffic-button.on {
-  background-image: url(/img/btn/btn_enabled01.png); }
+  background-image: url("/img/btn/btn_enabled01.png"); }
 
 #event-button {
-  background-image: url(/img/btn/btn02.png); }
+  background-image: url("/img/btn/btn02.png"); }
 
 #event-button:hover {
-  background-image: url(/img/btn/btn_hover02.png); }
+  background-image: url("/img/btn/btn_hover02.png"); }
 
 #event-button.on {
-  background-image: url(/img/btn/btn_enabled02.png);
+  background-image: url("/img/btn/btn_enabled02.png");
   background-position-x: -1px; }
 
 #parking-button {
-  background-image: url(/img/btn/btn03.png);
+  background-image: url("/img/btn/btn03.png");
   background-position-x: -1px; }
 
 #parking-button:hover {
-  background-image: url(/img/btn/btn_hover03.png);
+  background-image: url("/img/btn/btn_hover03.png");
   background-position-x: -1px; }
 
 #parking-button.on {
-  background-image: url(/img/btn/btn_enabled03.png);
+  background-image: url("/img/btn/btn_enabled03.png");
   background-position-x: -1px; }
 
 #vd-button {
-  background-image: url(/img/btn/btn05.png);
+  background-image: url("/img/btn/btn05.png");
   background-position-x: -2px; }
 
 #vd-button:hover {
-  background-image: url(/img/btn/btn_hover05.png); }
+  background-image: url("/img/btn/btn_hover05.png"); }
 
 #vd-button.on {
-  background-image: url(/img/btn/btn_enabled05.png); }
+  background-image: url("/img/btn/btn_enabled05.png"); }
 
 #form-dialog {
   width: 400px;

@@ -35,6 +35,13 @@ var modal = {
             modal_exdetail += String.format("<p>{0}<span>{1}</span></p>", value.name, value.value);
         });
         $('#modal-wrap').find('.exdetail').prop('innerHTML', modal_exdetail)
+    },
+    center: function(){
+      var modalHeight = $('#modal-wrap').height();
+      var windowHeight = $('#col-right').height();
+      var topBotMargin = (windowHeight - (modalHeight + 30))/2;
+      $('#modal-wrap').css('margin-top',topBotMargin);
+      $('#modal-wrap').css('margin-bottom',topBotMargin);
     }
 }
 
@@ -155,7 +162,7 @@ console.log(json_path);
 var iconSize = new google.maps.Size(29, 39);
 var iconAnchor = new google.maps.Point(14.5, 37);
 var eventMarkerSize = new google.maps.Size(42, 50);
-var eventMarkerAnchor = new google.maps.Point(21, 46);
+var eventMarkerAnchor = new google.maps.Point(21,46);
 var parkingMarkerSize = new google.maps.Size(34, 47);
 var parkingMarkerAnchor = new google.maps.Point(17, 47);
 var parkingLabelAnchor = new google.maps.Point(20, 37);
@@ -294,6 +301,7 @@ google.maps.Map.prototype.clearOverlays = function() {
 }
 
 google.maps.Map.prototype.panToWithOffset = function(latlng, offsetX, offsetY) {
+    console.log(offsetY);
     var map = this;
     var ov = new google.maps.OverlayView();
     ov.onAdd = function() {
@@ -442,8 +450,24 @@ function addMarkerWithInfo(myLatlng, info, icon, thisMap) {
 function addMarkerListener(marker, info) {
     google.maps.event.addListener(marker, 'click', function() {
         var markerPosition = marker.getPosition();
+        modal.title = info.title;
+        modal.exinfo = info.exinfo;
+        modal.exdetail = info.exdetail;
+        modal.setup();
+        $('#modal-wrap').css('opacity', 0);
+        $('#modal-wrap').removeClass('hidden');
+        $('#modal-wrap').animate({
+            opacity: 1
+        }, 300);
+        $('#modal-pointer').css('opacity', 0);
+        $('#modal-pointer').removeClass('hidden');
+        $('#modal-pointer').animate({
+            opacity: 1
+        }, 300);
         showModal(info, markerPosition);
+
     });
+    console.log(markersArray);
 }
 
 function showModal(info, markerPosition) {
@@ -456,11 +480,10 @@ function showModal(info, markerPosition) {
     $('#modal-wrap').animate({
         opacity: 1
     }, 300);
-
-
+    modal.center();
     var modalHeight = $('.modal-app-msg').height();
     //window.setTimeout(function() {
-    map.panToWithOffset(markerPosition, 0, modalHeight * -1 / 2 - 55);
+    map.panToWithOffset(markerPosition, -1, modalHeight * -1 / 2 - 55);
     //}, 1000);
 
     //window.setTimeout(function() {
@@ -472,13 +495,9 @@ function showModal(info, markerPosition) {
     //}, 500);
 }
 
-
-
-
 var mapShow = {
     //mapShow.TrafficEvent
     TrafficEvent: function() {
-        //var traffic_event_json_url = "http://140.92.88.92:38080/TrafficEvent/TrafficEvent?type=go&amp;lon=121.564561&amp;lat=25.033327&amp;range=200";
         if (formItems.eventCat && formItems.eventCat !== "none") {
             $.getJSON(json_path.TrafficEvent, function(json) {
                 //var exImage = "icon/ex.html";
@@ -565,9 +584,8 @@ var mapShow = {
         });
         //ctaLayer.setMap(map);
         google.maps.event.addListener(ctaLayer, 'click', function(kmlEvent) {
-            var text = kmlEvent.featureData.description;
             console.log('kmlEvent:');
-            console.log(kmlEvent);
+            console.log(kmlEvent.latLng);
             mapShow.roadSpeed(kmlEvent.latLng);
         });
     },
@@ -922,6 +940,7 @@ var mapShow = {
 
             console.log(arr);
             console.log(dataObj);
+            console.log(latLng);
 
             var info = {};
             info.title = roadName;
@@ -945,6 +964,7 @@ var mapShow = {
                 title: info.title
             });
             addMarkerListener(marker, info);
+            markersArray.push(marker);
             //marker.click();
         });
     },
@@ -1265,15 +1285,30 @@ $(document).ready(function() {
         }
     });
 
-    $("input[name='rdo-conv']").on('change', function(e) {
-        var checkedValues = getCheckedValues('rdo-conv');
-        var withoutAll = getCheckedValuesWithoutAll('rdo-conv');
-        if (checkedValues.indexOf("all") > -1) {
+    $("input[name='rdo-conv']").on('change', function() {
+        if ($(this).attr("value") == "all") {
+            if ($(this).prop('checked') !== true) {
+                $('#flipswitch').switchButton({
+                    checked: false
+                });
+                $('input[name="rdo-conv"]').prop("checked", false).checkboxradio('refresh');
+            }
+        } else {
+            var withoutAll = getCheckedValuesWithoutAll('rdo-conv');
+            if (withoutAll.length == 7) {
+                $('#rdo-conv-1').prop('checked', true).checkboxradio('refresh');
+            } else {
+                $('#rdo-conv-1').prop('checked', false).checkboxradio('refresh');
+            }
+        }
+        tempcheckedValues = getCheckedValues('rdo-conv');
+        if (tempcheckedValues.indexOf("all") > -1) {
             $('#flipswitch').switchButton({
                 checked: true
             });
-            $('input[name="rdo-conv"]').attr("checked", true).checkboxradio('refresh');
-        } else if (checkedValues.length > 0) {
+            $('input[name="rdo-conv"]').prop('checked', true).checkboxradio('refresh');
+
+        } else if (tempcheckedValues.length > 0) {
             $('#flipswitch').switchButton({
                 checked: true
             });
@@ -1282,15 +1317,7 @@ $(document).ready(function() {
                 checked: false
             });
         }
-        if ($(this).attr("value") == "all") {
-            if ($(this).attr("checked") !== "checked") {
-                $('#flipswitch').switchButton({
-                    checked: false
-                });
-             $('input[name="rdo-conv"]').attr("checked", false).checkboxradio('refresh');
-            }
-        }
-        checkedValues = getCheckedValues('rdo-conv')
+        checkedValues = getCheckedValues('rdo-conv');
         console.log(checkedValues);
     });
 
