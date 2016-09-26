@@ -1,8 +1,5 @@
 var map = null;
-var myCenter = {
-    lat: 25.031818781996297,
-    lng: 121.55528204172494
-}
+var myCenter = new Object();
 
 if (!String.format) {
     String.format = function(format) {
@@ -13,13 +10,23 @@ if (!String.format) {
     };
 }
 
-
 function initMap() {
-
-    var myLatlng = new google.maps.LatLng(myCenter.lat, myCenter.lng);
+    //browser offers locating service
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            myCenter.lat = position.coords.latitude;
+            myCenter.lng = position.coords.longitude;
+            var myLatlng = new google.maps.LatLng(myCenter.lat, myCenter.lng);
+            map.setCenter(myLatlng);
+        });
+    } else { /* default location for no locating servive browsers */
+        myCenter.lat = 25.0553088;
+        myCenter.lng = 121.5541152;
+        var myLatlng = new google.maps.LatLng(myCenter.lat, myCenter.lng);
+        map.setCenter(myLatlng);
+    }
     var myOptions = {
-        zoom: 15,
-        center: myLatlng,
+        zoom: 16,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         mapTypeControl: false,
         panControl: true,
@@ -49,10 +56,7 @@ function initMap() {
                     opacity: 0
                 }, 300);
             }
-
-
         }
-
     });
 }
 

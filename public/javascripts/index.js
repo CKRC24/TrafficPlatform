@@ -441,9 +441,6 @@ function addMarkerWithInfo(myLatlng, info, icon, thisMap) {
         var markerPosition = marker.getPosition();
         showModal(info, markerPosition);
     });
-
-
-
     markersArray.push(marker);
 }
 
@@ -1371,6 +1368,9 @@ $(document).ready(function() {
 
     $('#flipswitch').change(function() {
         console.log($(this).prop('checked'));
+        if($(this).prop('checked')== false){
+            $('input[name="rdo-conv"]').prop("checked", false).checkboxradio('refresh');
+        }
     });
 
     $("fieldset legend").click(function() {
@@ -1391,7 +1391,7 @@ $(document).ready(function() {
         //alert('change');
     });
 
-    $('#road-submit-button').click(btn_click);
+    //$('#road-submit-button').click(btn_click);
     $('#road-submit-button2').click(btn_click);
 
     $('#modal-btn-close').click(function() {
