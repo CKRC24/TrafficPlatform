@@ -5,6 +5,7 @@ body,
 div,
 html {
   margin: 0;
+  border: 0;
   padding: 0;
   font-family: Tahoma, Helvetica, Arial, "ctb_wcl-06", "Microsoft Yahei", "微软雅黑", STXihei, "华文细黑", sans-serif;
   box-sizing: border-box; }
@@ -397,25 +398,23 @@ legend {
   border-top: 1px solid #dadada;
   display: block;
   width: 100%; }
+  .modal-footer .row {
+    font-size: 0; }
 
 .modal-footer .lightblue {
   color: #00a9ae; }
 
 .modal-footer .btn {
-  display: table-cell;
+  display: inline-block;
+  width: 50%;
   text-align: center;
   padding: 12px 0;
-  border-right: 1px solid #dadada;
   font-size: 15px;
   color: #000;
   border-radius: 0;
-  font-weight: 700; }
-
-.modal-footer .btn:first-child {
-  width: 60%; }
-
-.modal-footer .btn:last-child {
-  width: 40%; }
+  font-weight: 700;
+  margin: 0;
+  border: 0; }
 
 .modal-footer .lightblue:hover {
   color: #fff; }

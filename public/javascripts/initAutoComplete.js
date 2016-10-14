@@ -11,6 +11,7 @@ if (!String.format) {
 }
 
 function initMap() {
+    var markers = [];
     //browser offers locating service
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position) {
@@ -18,6 +19,19 @@ function initMap() {
             myCenter.lng = position.coords.longitude;
             var myLatlng = new google.maps.LatLng(myCenter.lat, myCenter.lng);
             map.setCenter(myLatlng);
+            //location icon setup
+            var location = {
+                url: "/img/src/location.png",
+                origin: new google.maps.Point(0, 0),
+                anchor: new google.maps.Point(17, 34),
+                scaledSize: new google.maps.Size(50, 50)
+            };
+            markers.push(new google.maps.Marker({
+                map: map,
+                icon: location,
+                title: "You are here!",
+                position: myLatlng
+            }));
         });
     } else { /* default location for no locating servive browsers */
         myCenter.lat = 25.0553088;
@@ -62,8 +76,6 @@ function initMap() {
 
 function initAutocomplete() {
     initMap();
-
-
     // Create the search box and link it to the UI element.
     var input = document.getElementById('pac-input');
     var searchBox = new google.maps.places.SearchBox(input);
@@ -73,8 +85,6 @@ function initAutocomplete() {
     map.addListener('bounds_changed', function() {
         searchBox.setBounds(map.getBounds());
     });
-
-    var markers = [];
     // [START region_getplaces]
     // Listen for the event fired when the user selects a prediction and retrieve
     // more details for that place.
