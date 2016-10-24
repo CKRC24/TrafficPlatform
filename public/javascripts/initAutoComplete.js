@@ -29,9 +29,7 @@ function initMap() {
     }
 
 
-    map = new google.maps.Map(document.getElementById("map_canvas"),
-<<<<<<< HEAD
-      myOptions);
+    map = new google.maps.Map(document.getElementById("map_canvas"),myOptions);
     //joseph : set default pos. when exception
     var mapSet = false;
     var setDefaultPos = function (){
