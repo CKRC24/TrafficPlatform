@@ -12,6 +12,12 @@ if (!String.format) {
 
 function initMap() {
     var markers = [];
+    var location = {
+        url: "/img/src/location.png",
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(17, 34),
+        scaledSize: new google.maps.Size(50, 50)
+    };
     var myOptions = {
         zoom: 16,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -37,6 +43,12 @@ function initMap() {
         myCenter.lat = 25.0553088;
         myCenter.lng = 121.5541152;
         var myLatlng = new google.maps.LatLng(myCenter.lat, myCenter.lng);
+        markers.push(new google.maps.Marker({
+            map: map,
+            icon: location,
+            title: "You are here!",
+            position: myLatlng
+        }));
         map.setCenter(myLatlng);
 
     }
@@ -49,13 +61,6 @@ function initMap() {
                 myCenter.lng = position.coords.longitude;
                 var myLatlng = new google.maps.LatLng(myCenter.lat, myCenter.lng);
                 map.setCenter(myLatlng);
-                //location icon setup
-                var location = {
-                    url: "/img/src/location.png",
-                    origin: new google.maps.Point(0, 0),
-                    anchor: new google.maps.Point(17, 34),
-                    scaledSize: new google.maps.Size(50, 50)
-                };
                 markers.push(new google.maps.Marker({
                     map: map,
                     icon: location,
