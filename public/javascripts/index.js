@@ -1,5 +1,5 @@
 var data = null;
-
+var end = null;
 var mapFlags = {
     trafficFlow: false,
     event: false,
@@ -10,6 +10,15 @@ var mapFlags = {
     vd: false,
     convenient: false
 };
+
+var directionsService = new google.maps.DirectionsService();
+var directionsDisplay;
+var rendererOptions = {
+    map: map,
+    suppressMarkers: true
+}
+directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
+directionsDisplay.setMap(map);
 
 var modal = {
     title: "Modal Title",
@@ -334,6 +343,7 @@ function clearMarkers() {
         for (var i = 0; i < markersArray.length; i++) {
             markersArray[i].setMap(null);
         }
+        clearRoute();
     }
     markersArray = [];
 }
@@ -462,7 +472,7 @@ function addMarkerListener(marker, info) {
             opacity: 1
         }, 300);
         showModal(info, markerPosition);
-
+        end = markerPosition;
     });
     console.log(markersArray);
 }
@@ -491,7 +501,35 @@ function showModal(info, markerPosition) {
     }, 300);
     //}, 500);
 }
-
+//navigate
+function navigate(end){
+  clearRoute();
+  directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
+  directionsDisplay.setMap(map);
+  var location = new Object();
+  navigator.geolocation.getCurrentPosition(function(position) {
+    location.lat = position.coords.latitude;
+    location.lng = position.coords.longitude;
+    var start = new google.maps.LatLng(location.lat, location.lng);
+    var request = {
+      origin:start,
+      destination:end,
+      travelMode: google.maps.TravelMode.DRIVING
+    };
+    directionsService.route(request, function(result, status) {
+      if (status == google.maps.DirectionsStatus.OK) {
+        directionsDisplay.setDirections(result);
+      }
+    });
+  });
+  console.log("Go");
+}
+//clear route
+function clearRoute(){
+  console.log("clear");
+  directionsDisplay.setMap(null);
+  directionDisplay = null;
+}
 var mapShow = {
     //mapShow.TrafficEvent
     TrafficEvent: function() {
@@ -1409,7 +1447,7 @@ $(document).ready(function() {
 
     $('#modal-goto').click(function() {
         $('#modal-wrap').addClass('hidden');
-        map.panTo(markerPosition);
+        navigate(end);
     })
 
     var currentDate = $(".selector").datepicker("getDate");
