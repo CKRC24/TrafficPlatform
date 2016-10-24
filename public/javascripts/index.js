@@ -1103,6 +1103,7 @@ function SetCenter() {
     //json_paths.dynamic.trafficFlow();
 }
 
+
 function drawDataTable() {
     var infoCat = $("#info-category").val();
     //alert(infoCat);
@@ -1263,6 +1264,10 @@ $(document).ready(function() {
     $("#parking-hourly").selectmenu();
     $("#parking-type").selectmenu();
     $("#info-category").on("selectmenuchange", drawDataTable);
+
+    //joseph
+    $("#fleet-category").selectmenu();
+    $("#fleet-category").on("selectmenuchange", fleetinfo);
 
     //$("fieldset").controlgroup();
 
