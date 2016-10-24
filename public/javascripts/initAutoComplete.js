@@ -12,7 +12,6 @@ if (!String.format) {
 
 function initMap() {
     var markers = [];
-
     var myOptions = {
         zoom: 16,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -31,6 +30,7 @@ function initMap() {
 
 
     map = new google.maps.Map(document.getElementById("map_canvas"),
+<<<<<<< HEAD
       myOptions);
     //joseph : set default pos. when exception
     var mapSet = false;
@@ -73,7 +73,6 @@ function initMap() {
     }
     if(!mapSet)
         setDefaultPos();
-
 
     map.addListener('center_changed', function() {
         // 3 seconds after the center of the map has changed, pan back to the
@@ -146,4 +145,5 @@ function initAutocomplete() {
         map.fitBounds(bounds);
     });
     // [END region_getplaces]
+
 }
