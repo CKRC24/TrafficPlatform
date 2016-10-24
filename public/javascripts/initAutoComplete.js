@@ -32,6 +32,7 @@ function initMap() {
                 title: "You are here!",
                 position: myLatlng
             }));
+
         });
     } else { /* default location for no locating servive browsers */
         myCenter.lat = 25.0553088;
@@ -58,7 +59,6 @@ function initMap() {
 
     map = new google.maps.Map(document.getElementById("map_canvas"),
         myOptions);
-
     map.addListener('center_changed', function() {
         // 3 seconds after the center of the map has changed, pan back to the
         // marker.
@@ -130,4 +130,5 @@ function initAutocomplete() {
         map.fitBounds(bounds);
     });
     // [END region_getplaces]
+
 }
