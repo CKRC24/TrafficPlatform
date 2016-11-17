@@ -1,5 +1,5 @@
 var data = null;
-var end = null;
+
 var mapFlags = {
     trafficFlow: false,
     event: false,
@@ -10,15 +10,6 @@ var mapFlags = {
     vd: false,
     convenient: false
 };
-
-var directionsService = new google.maps.DirectionsService();
-var directionsDisplay;
-var rendererOptions = {
-    map: map,
-    suppressMarkers: true
-}
-directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
-directionsDisplay.setMap(map);
 
 var modal = {
     title: "Modal Title",
@@ -46,11 +37,11 @@ var modal = {
         $('#modal-wrap').find('.exdetail').prop('innerHTML', modal_exdetail)
     },
     center: function(){
-      var modalHeight = $('#modal-wrap').height();
-      var windowHeight = $('#col-right').height();
-      var topBotMargin = (windowHeight - (modalHeight + 30))/2;
-      $('#modal-wrap').css('margin-top',topBotMargin);
-      $('#modal-wrap').css('margin-bottom',topBotMargin);
+        var modalHeight = $('#modal-wrap').height();
+        var windowHeight = $('#col-right').height();
+        var topBotMargin = (windowHeight - (modalHeight + 30))/2;
+        $('#modal-wrap').css('margin-top',topBotMargin);
+        $('#modal-wrap').css('margin-bottom',topBotMargin);
     }
 }
 
@@ -121,8 +112,8 @@ var json_paths = {
         TrafficEvent: function() {
             var path = String.format("trafficevent?lat={0}&lon={1}&range={2}&uuid=1234567777", myCenter.lat, myCenter.lng, "50000");
             var targetUrl = BaseUrl + path;
-            //console.log('TrafficEvent:');
-            //console.log(targetUrl);
+            console.log('TrafficEvent:');
+            console.log(targetUrl);
             return targetUrl;
         },
         convenient: function() {
@@ -130,8 +121,8 @@ var json_paths = {
             var ConvPar = getConvPar();
             var path = String.format("poiinfo?lat={0}&lon={1}&range={2}&uuid=1234567777&period={3}{4}", myCenter.lat, myCenter.lng, range, period, ConvPar);
             var targetUrl = BaseUrl + path;
-            //console.log('convenient:');
-            //console.log(targetUrl);
+            console.log('convenient:');
+            console.log(targetUrl);
             return targetUrl;
             //return String.format("http://52.196.208.172:8080/PoiInfo?lon={0}&lat={1}&range=50000{2}", myCenter.lat, myCenter.lng,"&toilet=1&oil=1&rest=1&carFactory=1&hospital=1&police=1&carWasher=1&alarmRoad=1&public=1");
             //return String.format("http://52.196.208.172:8080/PoiInfo?lat=25.038189&lon=121.532990&range=2000{2}", myCenter.lat, myCenter.lng, ConvPar);
@@ -139,8 +130,8 @@ var json_paths = {
         trafficFlow: function() {
             var period = timetype.indexOf(formItems.timetype);
             var path = String.format("roadinfo?lat={0}&lon={1}&uuid=1234567777&period={2}", myCenter.lat, myCenter.lng, period);
-            //console.log('trafficFlow:');
-            //console.log(path);
+            console.log('trafficFlow:');
+            console.log(path);
             var targetUrl = BaseUrl + path;
             return targetUrl;
         },
@@ -150,24 +141,24 @@ var json_paths = {
             var targetUrl = BaseUrl + path;
             return targetUrl;
             /*
-            $.getJSON(targetUrl, function(json) {
-                console.log('roadSpeed: ' + targetUrl);
-                console.log(json);
-            });*/
+             $.getJSON(targetUrl, function(json) {
+             console.log('roadSpeed: ' + targetUrl);
+             console.log(json);
+             });*/
         },
         //json_paths.dynamic.parkingInfo
         parkingInfo: function() {
             var period = timetype.indexOf(formItems.timetype);
             var path = String.format("parkinginfo?lat={0}&lon={1}&range={2}&period={3}&hourly=0&vendor=0&uuid=1234567777", myCenter.lat, myCenter.lng, range, period);
             var targetUrl = BaseUrl + path;
-            //console.log('parkingInfo:');
-            //console.log(targetUrl);
+            console.log('parkingInfo:');
+            console.log(targetUrl);
             return targetUrl;
         }
     }
 };
 var json_path = json_paths.instant;
-//console.log(json_path);
+console.log(json_path);
 var iconSize = new google.maps.Size(29, 39);
 var iconAnchor = new google.maps.Point(14.5, 37);
 var eventMarkerSize = new google.maps.Size(42, 50);
@@ -253,8 +244,8 @@ var markerIcons = {
     speed: {
         //url: "img/markers/pin-speed-pink-hdpi.png",
         url: "https://chart.googleapis.com/chart?chst=d_map_pin_letter&chld=30|58ac45|FFFFFF"
-            //scaledSize: new google.maps.Size(31, 35)
-            //scaledSize: new google.maps.Size(25,28)
+        //scaledSize: new google.maps.Size(31, 35)
+        //scaledSize: new google.maps.Size(25,28)
     },
     speeds: [{
         url: "/img/markers/pin-speed-green-mdpi.png",
@@ -294,13 +285,13 @@ var markerIcons = {
 };
 
 /*function clone(obj) {
-    if (obj == null || typeof(obj) != 'object')
-        return obj;
-    var temp = obj.constructor();
-    for (var key in obj)
-        temp[key] = clone(obj[key]);
-    return temp;
-}*/
+ if (obj == null || typeof(obj) != 'object')
+ return obj;
+ var temp = obj.constructor();
+ for (var key in obj)
+ temp[key] = clone(obj[key]);
+ return temp;
+ }*/
 
 google.maps.Map.prototype.clearOverlays = function() {
     if (ctaLayer != null) {
@@ -310,7 +301,7 @@ google.maps.Map.prototype.clearOverlays = function() {
 }
 
 google.maps.Map.prototype.panToWithOffset = function(latlng, offsetX, offsetY) {
-    //console.log(offsetY);
+    console.log(offsetY);
     var map = this;
     var ov = new google.maps.OverlayView();
     ov.onAdd = function() {
@@ -343,7 +334,6 @@ function clearMarkers() {
         for (var i = 0; i < markersArray.length; i++) {
             markersArray[i].setMap(null);
         }
-        clearRoute();
     }
     markersArray = [];
 }
@@ -451,6 +441,9 @@ function addMarkerWithInfo(myLatlng, info, icon, thisMap) {
         var markerPosition = marker.getPosition();
         showModal(info, markerPosition);
     });
+
+
+
     markersArray.push(marker);
 }
 
@@ -472,8 +465,9 @@ function addMarkerListener(marker, info) {
             opacity: 1
         }, 300);
         showModal(info, markerPosition);
-        end = markerPosition;
+
     });
+    console.log(markersArray);
 }
 
 function showModal(info, markerPosition) {
@@ -499,32 +493,6 @@ function showModal(info, markerPosition) {
         opacity: 1
     }, 300);
     //}, 500);
-}
-function navigate(end){
-  clearRoute();
-  directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
-  directionsDisplay.setMap(map);
-  var location = new Object();
-  location.lat = 25.0553088;
-  location.lng = 121.5541152;
-  var start = new google.maps.LatLng(location.lat, location.lng);
-  var request = {
-    origin:start,
-    destination:end,
-    travelMode: google.maps.TravelMode.DRIVING
-  };
-  directionsService.route(request, function(result, status) {
-    if (status == google.maps.DirectionsStatus.OK) {
-      directionsDisplay.setDirections(result);
-    }
-  });
-  console.log("Go");
-}
-//clear route
-function clearRoute(){
-  console.log("clear");
-  directionsDisplay.setMap(null);
-  directionDisplay = null;
 }
 
 var mapShow = {
@@ -802,7 +770,7 @@ var mapShow = {
                     labelClass: "labels-parking", // the CSS class for the label
                     labelAnchor: parkingLabelAnchor,
                     title: info.title
-                        //label: "HOW",
+                    //label: "HOW",
                 });
 
                 addMarkerListener(marker, info);
@@ -823,12 +791,12 @@ var mapShow = {
                     position: myLatlng,
                     map: map,
                     /*
-                    icon: {
-                        //url : "icon/black.png",
-                        url: markerIcons.cms,
-                        //anchor:
-                        scaledSize: new google.maps.Size(30,30)
-                    },*/
+                     icon: {
+                     //url : "icon/black.png",
+                     url: markerIcons.cms,
+                     //anchor:
+                     scaledSize: new google.maps.Size(30,30)
+                     },*/
                     icon: markerIcons.cms,
                     title: info
                 });
@@ -849,12 +817,12 @@ var mapShow = {
                     position: myLatlng,
                     map: map,
                     /*
-                    icon: {
-                        //url : "icon/blue.png",
-                        url: markerIcons.camera,
-                        //anchor:
-                        scaledSize: new google.maps.Size(30,30)
-                    },*/
+                     icon: {
+                     //url : "icon/blue.png",
+                     url: markerIcons.camera,
+                     //anchor:
+                     scaledSize: new google.maps.Size(30,30)
+                     },*/
                     icon: markerIcons.camera,
                     title: info
                 });
@@ -895,7 +863,7 @@ var mapShow = {
                 if (jsonVal && jsonVal !== undefined && jsonVal.length > 0) {
                     /*$.each(jsonVal, function(i,value) {
 
-                    });*/
+                     });*/
                     for (var i in jsonVal) {
                         var thisJ = jsonVal[i];
                         var myLatlng = new google.maps.LatLng(thisJ.lat, thisJ.lon);
@@ -1063,10 +1031,10 @@ function redraw() {
         show = true;
     }
 
+    console.log('show');
+    console.log(show);
     if (!show) {
         showDialog('未選擇顯示項目，標記已清空!');
-    } else {
-      console.log("顯示標記項目");
     }
 
 }
@@ -1107,18 +1075,18 @@ $.fn.extend({
 });
 
 /*
-function drawTable() {
-    $.getJSON($('#demo-table').data("url"), function(json) {
-        if (json && json.length > 0) {
-            $.each(json[0], function(key, value) {
-                //alert(key + ": " + value);
-                $('#demo-table').find("thead").find("tr").append(String.format("<th data-key='{0}'>{0}</th>", key));
-            });
-        }
+ function drawTable() {
+ $.getJSON($('#demo-table').data("url"), function(json) {
+ if (json && json.length > 0) {
+ $.each(json[0], function(key, value) {
+ //alert(key + ": " + value);
+ $('#demo-table').find("thead").find("tr").append(String.format("<th data-key='{0}'>{0}</th>", key));
+ });
+ }
 
-    });
-}
-*/
+ });
+ }
+ */
 
 
 function SetCenter() {
@@ -1138,9 +1106,9 @@ function SetCenter() {
     //json_paths.dynamic.trafficFlow();
 }
 
-
 function drawDataTable() {
     var infoCat = $("#info-category").val();
+
     //alert(infoCat);
     switch (infoCat) {
         case 'county':
@@ -1205,11 +1173,15 @@ function syncDateTime() {
     $('#lbl-datetime').text(date + ' ' + hh + ':' + mm);
 }
 
+function syncDateTime2() {
+    var date = $("#calendar2").val();
+    $('#lbl-datetime2').text(date );
+}
+
 //google.maps.event.addDomListener(window, 'load', initialize);
 $(document).ready(function() {
 
     //$('#col-left').height($('#col-left').height());
-
     var dt = new Date();
     var dthr = dt.getHours();
     var dtmin = dt.getMinutes();
@@ -1222,12 +1194,27 @@ $(document).ready(function() {
             syncDateTime();
         }
     }).val(dthr);
+    $("#hour-spinner2").spinner({
+        max: 23,
+        min: 0,
+        spin: function() {
+            syncDateTime2();
+        }
+    }).val(dthr);
     $("#minute-spinner").spinner({
         max: 55,
         min: 0,
         step: 5,
         spin: function() {
             syncDateTime();
+        }
+    }).val(dtmin);
+    $("#minute-spinner2").spinner({
+        max: 55,
+        min: 0,
+        step: 5,
+        spin: function() {
+            syncDateTime2();
         }
     }).val(dtmin);
 
@@ -1283,6 +1270,17 @@ $(document).ready(function() {
             syncDateTime();
         }
     });
+    $('#calendar2').datepicker({
+        inline: true,
+        firstDay: 1,
+        showOtherMonths: true,
+        dateFormat: "yy-mm-dd",
+        dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
+        onSelect: function(dateText, inst) {
+            syncDateTime2();
+        }
+    });
+
     $("input[name='rdo-time']:first").prop("checked", true);
     $("input[name='rdo-time']").checkboxradio({
         icon: false
@@ -1299,12 +1297,6 @@ $(document).ready(function() {
     $("#parking-hourly").selectmenu();
     $("#parking-type").selectmenu();
     $("#info-category").on("selectmenuchange", drawDataTable);
-
-    //joseph
-    $("#fleet-category").selectmenu();
-    $("#fleet-category").on("selectmenuchange", fleetinfo);
-
-    //$("fieldset").controlgroup();
 
     $("input[name='rdo-time']").on('change', function(e) {
         console.log($("input[name='rdo-time']:checked").val());
@@ -1370,10 +1362,10 @@ $(document).ready(function() {
         if ($(this).hasClass('on')) {
             $('#event-field').removeClass('hidden');
             /*$('#event-field').animate({
-                'background-color': #CCC
-            }, 300, function() {
+             'background-color': #CCC
+             }, 300, function() {
 
-            });*/
+             });*/
             $('#event-field').effect("highlight", {}, 1000);
         } else {
             $('#event-field').addClass('hidden');
@@ -1408,9 +1400,6 @@ $(document).ready(function() {
 
     $('#flipswitch').change(function() {
         console.log($(this).prop('checked'));
-        if($(this).prop('checked')== false){
-            $('input[name="rdo-conv"]').prop("checked", false).checkboxradio('refresh');
-        }
     });
 
     $("fieldset legend").click(function() {
@@ -1431,8 +1420,9 @@ $(document).ready(function() {
         //alert('change');
     });
 
-    //$('#road-submit-button').click(btn_click);
+    $('#road-submit-button').click(btn_click);
     $('#road-submit-button2').click(btn_click);
+
 
     $('#modal-btn-close').click(function() {
         $('#modal-wrap').addClass('hidden');
@@ -1444,7 +1434,7 @@ $(document).ready(function() {
 
     $('#modal-goto').click(function() {
         $('#modal-wrap').addClass('hidden');
-        navigate(end);
+        map.panTo(markerPosition);
     })
 
     var currentDate = $(".selector").datepicker("getDate");
@@ -1461,7 +1451,7 @@ function btn_click() {
     formItems.parkingType = $('#parking-type').val();
     formItems.parkingHourly = $('#parking-hourly').val();
 
-    //console.log(formItems);
+    console.log(formItems);
 
     if (!$('#modal-wrap').hasClass('hidden')) {
         $('#modal-wrap').addClass('hidden');
@@ -1511,7 +1501,121 @@ function btn_click() {
             mapShow.DynamicTrafficFlow();
         }
     }
-
     redraw();
     drawDataTable();
 }
+$('#coverage-submit-button').click(coveragebtn_click);
+
+function coveragebtn_click() {
+    setdatasource();
+    drawcoveragechart();
+    calculatecoveragetable();
+
+
+
+
+
+
+}
+
+
+
+function drawcoveragechart() {
+    //$("#chartContainer").empty();
+    //svg = dimple.newSvg("#chartContainer", 750, 800);
+    d3.json($('#lbl-datasource').text(), function (data) {
+        var r = [ ];
+        //alert(Date.parse(dd.slice(0,19)));
+        for (var i in data) {
+
+            r.push([ new Date(Date.parse(data[i].DATA_TIME.slice(0,19)+"+08:00")),
+                data[i].DATA        // line
+            ]);
+        }
+        //document.write( r +"<br>")
+        var orig_range = [ r[0][0].valueOf(), r[r.length -1][0].valueOf() ];
+        var g = new Dygraph(
+            document.getElementById("div_g2"),
+            r, {
+                rollPeriod: 7,
+                animatedZooms: true,
+                // errorBars: true,
+                width: 600,
+                height: 300,
+
+                labels: ["Date", "coverage"]
+            }
+        );
+
+
+    });
+}
+
+
+function setdatasource() {
+    var date = $("#calendar2").val();
+    var area = $("#data-area").val();
+    var scale = $("#data-scale").val();
+    $('#lbl-datasource').text( 'https://ulcac3l8d4.execute-api.ap-northeast-1.amazonaws.com/prod/coverage?scale=' + scale + '&date=' + date + '&region=' + area);
+
+}
+
+
+function calculatecoveragetable(table) {
+    $("#coveragetable-table tbody").html("");
+    d3.json($('#lbl-datasource').text(), function (data){
+        var scale = $("#data-scale").val();
+        if(scale=0)
+
+        var result = new Array(Math.ceil(data.length/12));
+        for(var i=0;i<Math.ceil(data.length/12);i++) {
+            result[i] = new Array(13);
+            result[i][0]=i+'時';}
+
+        for(var j=0;j<Math.ceil(data.length/12);j++)
+            for(var k=0;k<12;k++){
+                var a = j*12+k;
+                if(j==Math.floor(data.length/12)){
+                    if(k>=data.length%12)
+                        result[j][k+1]=0;
+                    else result[j][k+1]=data[a].DATA;
+                }else result[j][k+1]=data[a].DATA;
+                }
+
+        console.dir(result[Math.floor(data.length/12)]);
+        //alert(result.length);
+
+
+
+        $('#coveragetable-table').drawcoverTable(result);
+    });
+
+}
+
+$.fn.extend({
+    drawcoverTable: function(data) {
+        //alert('hi');
+        //console.dir(data[0]);
+
+        var target = $(this);
+        //alert(data.length);
+        for (var min=0;min<data.length;min++){
+            var row = $("<tr>")
+                .append($("<td>").html(data[min][0]))
+                .append($("<td>").html(data[min][1]))
+                .append($("<td>").html(data[min][2]))
+                .append($("<td>").html(data[min][3]))
+                .append($("<td>").html(data[min][4]))
+                .append($("<td>").html(data[min][5]))
+                .append($("<td>").html(data[min][6]))
+                .append($("<td>").html(data[min][7]))
+                .append($("<td>").html(data[min][8]))
+                .append($("<td>").html(data[min][9]))
+                .append($("<td>").html(data[min][10]))
+                .append($("<td>").html(data[min][11]))
+                .append($("<td>").html(data[min][12]));
+            $(target).find("tbody").append(row);}
+        $('#coveragetable-table').removeClass('hidden');
+    }
+});
+
