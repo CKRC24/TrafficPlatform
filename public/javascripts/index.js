@@ -10,7 +10,7 @@ var mapFlags = {
     vd: false,
     convenient: false
 };
-
+//navigation setup
 var directionsService = new google.maps.DirectionsService();
 var directionsDisplay;
 var rendererOptions = {
@@ -168,6 +168,9 @@ var json_paths = {
 };
 var json_path = json_paths.instant;
 //console.log(json_path);
+var origin = new google.maps.Point(0, 0);
+var searchMarkerScaleSize = new google.maps.Size(50, 50);
+var searchMarkerAnchor = new google.maps.Point(21, 34);
 var iconSize = new google.maps.Size(29, 39);
 var iconAnchor = new google.maps.Point(14.5, 37);
 var eventMarkerSize = new google.maps.Size(42, 50);
@@ -348,11 +351,6 @@ function clearMarkers() {
     markersArray = [];
 }
 
-function initialize() {
-    initMap();
-}
-
-
 function setParkingInfo() {
     if (parking) {
         $('#park').removeClass('enabled');
@@ -438,7 +436,6 @@ function setTrafficFlow() {
 }
 
 function addMarkerWithInfo(myLatlng, info, icon, thisMap) {
-    //var contentString = $('.modal-app-msg').prop('outerHTML');
 
     var marker = new google.maps.Marker({
         position: myLatlng,
@@ -457,20 +454,6 @@ function addMarkerWithInfo(myLatlng, info, icon, thisMap) {
 function addMarkerListener(marker, info) {
     google.maps.event.addListener(marker, 'click', function() {
         var markerPosition = marker.getPosition();
-        modal.title = info.title;
-        modal.exinfo = info.exinfo;
-        modal.exdetail = info.exdetail;
-        modal.setup();
-        $('#modal-wrap').css('opacity', 0);
-        $('#modal-wrap').removeClass('hidden');
-        $('#modal-wrap').animate({
-            opacity: 1
-        }, 300);
-        $('#modal-pointer').css('opacity', 0);
-        $('#modal-pointer').removeClass('hidden');
-        $('#modal-pointer').animate({
-            opacity: 1
-        }, 300);
         showModal(info, markerPosition);
         end = markerPosition;
     });
@@ -500,6 +483,8 @@ function showModal(info, markerPosition) {
     }, 300);
     //}, 500);
 }
+
+//navigate to destination
 function navigate(end){
   clearRoute();
   directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
@@ -1206,9 +1191,72 @@ function syncDateTime() {
     $('#lbl-datetime').text(date + ' ' + hh + ':' + mm);
 }
 
-//google.maps.event.addDomListener(window, 'load', initialize);
-$(document).ready(function() {
+function CreateSearchBox(){
+  //Create searchBox on the map
+  var input = document.getElementById('pac-input');
+  var searchBox = new google.maps.places.SearchBox(input);
+  map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
+  // Bias the SearchBox results towards current map's viewport.
+  map.addListener('bounds_changed', function() {
+      searchBox.setBounds(map.getBounds());
+  });
+
+  // Listen for the event fired when the user selects a prediction and retrieve
+  // more details for that place.
+  searchBox.addListener('places_changed', function() {
+      var places = searchBox.getPlaces();
+
+      if (places.length == 0) {
+          return;
+      }
+
+      // Clear out the old markers.
+      markersArray.forEach(function(marker) {
+          marker.setMap(null);
+      });
+      markersArray= [];
+
+      // For each place, get the icon, name and location.
+      var bounds = new google.maps.LatLngBounds();
+      places.forEach(function(place) {
+          var info = [];
+          info.title = place.name;
+          info.exinfo = { text: ''};
+          info.exdetail = [{
+            name : '電話：',
+            value: place.formatted_phone_number
+          },{
+            name : '地址：' ,
+            value : place.formatted_address
+          }];
+          var icon = {
+            url: "/img/src/location.png",
+            origin: origin,
+            anchor: searchMarkerAnchor,
+            scaledSize: searchMarkerScaleSize
+          };
+
+          // Create a marker for each place.
+          var marker = new google.maps.Marker({
+              map: map,
+              icon: icon,
+              title: place.name,
+              position: place.geometry.location
+          });
+          addMarkerListener(marker,info);
+
+          if (place.geometry.viewport) {
+              bounds.union(place.geometry.viewport);
+          } else {
+              bounds.extend(place.geometry.location);
+          }
+      });
+      map.fitBounds(bounds);
+  });
+}
+$(document).ready(function() {
+    CreateSearchBox();
     //$('#col-left').height($('#col-left').height());
 
     var dt = new Date();
