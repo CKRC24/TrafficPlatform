@@ -152,6 +152,27 @@
                                                 </div>
                                             </fieldset>
                                         </div>
+                                        <!--the fleet positions-->
+                                        <div class="left-col-but-wrap">
+                                            <div id="but-wrap" class="hidden">
+                                                <input id="road-submit-button" class="ui-button ui-widget ui-corner-all" type="submit" value="查詢">
+                                            </div>
+                                            <fieldset id="coverage-field">
+                                                <legend> 車隊即時顯示 </legend>
+                                                <div class="table-wrap">
+                                                    <div class="table-row">
+                                                        <div class="table-column table-col-left">車隊類別</div>
+                                                        <div class="table-column table-col-right">
+                                                            <select name="車隊類別" id="fleet-category">
+                                                                <option value="none"></option>
+                                                                <option value="eup">弋揚</option>
+                                                                <option value="gstech" selected="selected">長暉</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </fieldset>
+                                        </div>
                                     </div>
                                 </div>
                                 <div id="col-right" class="cells a-table-cell">
@@ -280,6 +301,9 @@
     <script src="/javascripts/initAutoComplete.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCNY4wWrUxnjB-qfbYAdM6ISVfIdbMjStI&libraries=places&callback=initAutocomplete"></script>
     <script src="/javascripts/MarkerLabel.js" aync></script>
+    <!--joseph-->
+    <script src="/javascripts/markerclusterer.js"></script>
+    <script src="/javascripts/fleetinfo.js"></script>
     <script src="/javascripts/index.js"></script>
 </body>
 

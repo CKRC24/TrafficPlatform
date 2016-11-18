@@ -13,34 +13,12 @@ if (!String.format) {
 
 function initMap() {
     var markers = [];
-    //browser offers locating service
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            myCenter.lat = position.coords.latitude;
-            myCenter.lng = position.coords.longitude;
-            var myLatlng = new google.maps.LatLng(myCenter.lat, myCenter.lng);
-            map.setCenter(myLatlng);
-            //location icon setup
-            var location = {
-                url: "/img/src/location.png",
-                origin: new google.maps.Point(0, 0),
-                anchor: new google.maps.Point(17, 34),
-                scaledSize: new google.maps.Size(50, 50)
-            };
-            markers.push(new google.maps.Marker({
-                map: map,
-                icon: location,
-                title: "You are here!",
-                position: myLatlng
-            }));
-
-        });
-    } else { /* default location for no locating servive browsers */
-        myCenter.lat = 25.0553088;
-        myCenter.lng = 121.5541152;
-        var myLatlng = new google.maps.LatLng(myCenter.lat, myCenter.lng);
-        map.setCenter(myLatlng);
-    }
+    var location = {
+        url: "/img/src/location.png",
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(17, 34),
+        scaledSize: new google.maps.Size(50, 50)
+    };
     var myOptions = {
         zoom: 16,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -58,8 +36,48 @@ function initMap() {
     }
 
 
-    map = new google.maps.Map(document.getElementById("map_canvas"),
-        myOptions);
+    map = new google.maps.Map(document.getElementById("map_canvas"),myOptions);
+    //joseph : set default pos. when exception
+    var mapSet = false;
+    var setDefaultPos = function (){
+        mapSet = true;
+        myCenter.lat = 25.0553088;
+        myCenter.lng = 121.5541152;
+        var myLatlng = new google.maps.LatLng(myCenter.lat, myCenter.lng);
+        markers.push(new google.maps.Marker({
+            map: map,
+            icon: location,
+            title: "You are here!",
+            position: myLatlng
+        }));
+        map.setCenter(myLatlng);
+
+    }
+    //browser offers locating service
+    if (navigator.geolocation) {
+        try {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                mapSet = true;
+                myCenter.lat = position.coords.latitude;
+                myCenter.lng = position.coords.longitude;
+                var myLatlng = new google.maps.LatLng(myCenter.lat, myCenter.lng);
+                map.setCenter(myLatlng);
+                markers.push(new google.maps.Marker({
+                    map: map,
+                    icon: location,
+                    title: "You are here!",
+                    position: myLatlng
+                }));
+            });
+        }catch (e){
+            setDefaultPos();
+        }
+    } else { /* default location for no locating servive browsers */
+        setDefaultPos();
+    }
+    if(!mapSet)
+        setDefaultPos();
+
     map.addListener('center_changed', function() {
         // 3 seconds after the center of the map has changed, pan back to the
         // marker.

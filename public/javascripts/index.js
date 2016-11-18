@@ -490,20 +490,18 @@ function navigate(end){
   directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
   directionsDisplay.setMap(map);
   var location = new Object();
-  navigator.geolocation.getCurrentPosition(function(position) {
-    location.lat = position.coords.latitude;
-    location.lng = position.coords.longitude;
-    var start = new google.maps.LatLng(location.lat, location.lng);
-    var request = {
-      origin:start,
-      destination:end,
-      travelMode: google.maps.TravelMode.DRIVING
-    };
-    directionsService.route(request, function(result, status) {
-      if (status == google.maps.DirectionsStatus.OK) {
-        directionsDisplay.setDirections(result);
-      }
-    });
+  location.lat = 25.0553088;
+  location.lng = 121.5541152;
+  var start = new google.maps.LatLng(location.lat, location.lng);
+  var request = {
+    origin:start,
+    destination:end,
+    travelMode: google.maps.TravelMode.DRIVING
+  };
+  directionsService.route(request, function(result, status) {
+    if (status == google.maps.DirectionsStatus.OK) {
+      directionsDisplay.setDirections(result);
+    }
   });
   console.log("Go");
 }
@@ -1125,6 +1123,7 @@ function SetCenter() {
     //json_paths.dynamic.trafficFlow();
 }
 
+
 function drawDataTable() {
     var infoCat = $("#info-category").val();
     //alert(infoCat);
@@ -1348,6 +1347,10 @@ $(document).ready(function() {
     $("#parking-hourly").selectmenu();
     $("#parking-type").selectmenu();
     $("#info-category").on("selectmenuchange", drawDataTable);
+
+    //joseph
+    $("#fleet-category").selectmenu();
+    $("#fleet-category").on("selectmenuchange", fleetinfo);
 
     //$("fieldset").controlgroup();
 
