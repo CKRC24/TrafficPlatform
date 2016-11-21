@@ -63,40 +63,6 @@
                                                 </div>
                                             </div>
                                         </fieldset>
-                                        <fieldset id="display-fileld" class="hidden">
-                                            <legend> 地圖顯示 </legend>
-                                            <div class="table-wrap">
-                                                <div class="table-row">
-                                                    <div class="table-column table-col-left">資料類別</div>
-                                                    <div class="table-column table-col-right">
-                                                        <select name="資料類別" id="data-category">
-                                                            <option value="all">全部</option>
-                                                            <option value="vd">VD</option>
-                                                            <option value="gvp-official" selected="selected">GVP-公部門</option>
-                                                            <option value="gvp-private">GVP-私人車隊</option>
-                                                            <option value="gvp-assigned">指定GVP車隊</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="table-row hidden">
-                                                    <div class="table-column table-col-left">便利資訊</div>
-                                                    <div class="table-column table-col-right">
-                                                        <select name="便利資訊" id="info-selector">
-                                                            <option value="all">全部</option>
-                                                            <option value="maintainence">保修廠</option>
-                                                            <option value="gas-station" selected="selected">加油站</option>
-                                                            <option value="toilet">公廁</option>
-                                                            <option value="transportation">大眾運輸</option>
-                                                            <option value="car-wash">洗車據點</option>
-                                                            <option value="hospital">醫院</option>
-                                                            <option value="police">警察局</option>
-                                                            <option value="others">其他景點</option>
-                                                            <option value="none">不顯示</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </fieldset>
                                         <fieldset id="event-field" class="hidden">
                                             <legend> 事件顯示 </legend>
                                             <div class="table-wrap">
@@ -266,7 +232,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+                                    <input id="pac-input" class="controls" type="text" placeholder="搜尋地圖">
                                     <div id="map_canvas" class="spanning a-table">&nbsp;</div>
                                 </div>
                             </div>
@@ -333,7 +299,7 @@
         </form>
     </div>
     <script src="/javascripts/initAutoComplete.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDjgcE_4RkfWJPYkZ8feGhe0MxkTNSyItY&libraries=places&callback=initAutocomplete"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCNY4wWrUxnjB-qfbYAdM6ISVfIdbMjStI&libraries=places&callback=initAutocomplete"></script>
     <script src="/javascripts/MarkerLabel.js" aync></script>
     <!--joseph-->
     <script src="/javascripts/markerclusterer.js"></script>

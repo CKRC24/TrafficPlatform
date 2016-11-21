@@ -10,7 +10,7 @@ var mapFlags = {
     vd: false,
     convenient: false
 };
-
+//navigation setup
 var directionsService = new google.maps.DirectionsService();
 var directionsDisplay;
 var rendererOptions = {
@@ -121,8 +121,8 @@ var json_paths = {
         TrafficEvent: function() {
             var path = String.format("trafficevent?lat={0}&lon={1}&range={2}&uuid=1234567777", myCenter.lat, myCenter.lng, "50000");
             var targetUrl = BaseUrl + path;
-            console.log('TrafficEvent:');
-            console.log(targetUrl);
+            //console.log('TrafficEvent:');
+            //console.log(targetUrl);
             return targetUrl;
         },
         convenient: function() {
@@ -130,8 +130,8 @@ var json_paths = {
             var ConvPar = getConvPar();
             var path = String.format("poiinfo?lat={0}&lon={1}&range={2}&uuid=1234567777&period={3}{4}", myCenter.lat, myCenter.lng, range, period, ConvPar);
             var targetUrl = BaseUrl + path;
-            console.log('convenient:');
-            console.log(targetUrl);
+            //console.log('convenient:');
+            //console.log(targetUrl);
             return targetUrl;
             //return String.format("http://52.196.208.172:8080/PoiInfo?lon={0}&lat={1}&range=50000{2}", myCenter.lat, myCenter.lng,"&toilet=1&oil=1&rest=1&carFactory=1&hospital=1&police=1&carWasher=1&alarmRoad=1&public=1");
             //return String.format("http://52.196.208.172:8080/PoiInfo?lat=25.038189&lon=121.532990&range=2000{2}", myCenter.lat, myCenter.lng, ConvPar);
@@ -139,8 +139,8 @@ var json_paths = {
         trafficFlow: function() {
             var period = timetype.indexOf(formItems.timetype);
             var path = String.format("roadinfo?lat={0}&lon={1}&uuid=1234567777&period={2}", myCenter.lat, myCenter.lng, period);
-            console.log('trafficFlow:');
-            console.log(path);
+            //console.log('trafficFlow:');
+            //console.log(path);
             var targetUrl = BaseUrl + path;
             return targetUrl;
         },
@@ -160,14 +160,17 @@ var json_paths = {
             var period = timetype.indexOf(formItems.timetype);
             var path = String.format("parkinginfo?lat={0}&lon={1}&range={2}&period={3}&hourly=0&vendor=0&uuid=1234567777", myCenter.lat, myCenter.lng, range, period);
             var targetUrl = BaseUrl + path;
-            console.log('parkingInfo:');
-            console.log(targetUrl);
+            //console.log('parkingInfo:');
+            //console.log(targetUrl);
             return targetUrl;
         }
     }
 };
 var json_path = json_paths.instant;
-console.log(json_path);
+//console.log(json_path);
+var origin = new google.maps.Point(0, 0);
+var searchMarkerScaleSize = new google.maps.Size(50, 50);
+var searchMarkerAnchor = new google.maps.Point(21, 34);
 var iconSize = new google.maps.Size(29, 39);
 var iconAnchor = new google.maps.Point(14.5, 37);
 var eventMarkerSize = new google.maps.Size(42, 50);
@@ -310,7 +313,7 @@ google.maps.Map.prototype.clearOverlays = function() {
 }
 
 google.maps.Map.prototype.panToWithOffset = function(latlng, offsetX, offsetY) {
-    console.log(offsetY);
+    //console.log(offsetY);
     var map = this;
     var ov = new google.maps.OverlayView();
     ov.onAdd = function() {
@@ -347,11 +350,6 @@ function clearMarkers() {
     }
     markersArray = [];
 }
-
-function initialize() {
-    initMap();
-}
-
 
 function setParkingInfo() {
     if (parking) {
@@ -438,7 +436,6 @@ function setTrafficFlow() {
 }
 
 function addMarkerWithInfo(myLatlng, info, icon, thisMap) {
-    //var contentString = $('.modal-app-msg').prop('outerHTML');
 
     var marker = new google.maps.Marker({
         position: myLatlng,
@@ -457,24 +454,9 @@ function addMarkerWithInfo(myLatlng, info, icon, thisMap) {
 function addMarkerListener(marker, info) {
     google.maps.event.addListener(marker, 'click', function() {
         var markerPosition = marker.getPosition();
-        modal.title = info.title;
-        modal.exinfo = info.exinfo;
-        modal.exdetail = info.exdetail;
-        modal.setup();
-        $('#modal-wrap').css('opacity', 0);
-        $('#modal-wrap').removeClass('hidden');
-        $('#modal-wrap').animate({
-            opacity: 1
-        }, 300);
-        $('#modal-pointer').css('opacity', 0);
-        $('#modal-pointer').removeClass('hidden');
-        $('#modal-pointer').animate({
-            opacity: 1
-        }, 300);
         showModal(info, markerPosition);
         end = markerPosition;
     });
-    console.log(markersArray);
 }
 
 function showModal(info, markerPosition) {
@@ -501,26 +483,25 @@ function showModal(info, markerPosition) {
     }, 300);
     //}, 500);
 }
-//navigate
+
+//navigate to destination
 function navigate(end){
   clearRoute();
   directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
   directionsDisplay.setMap(map);
   var location = new Object();
-  navigator.geolocation.getCurrentPosition(function(position) {
-    location.lat = position.coords.latitude;
-    location.lng = position.coords.longitude;
-    var start = new google.maps.LatLng(location.lat, location.lng);
-    var request = {
-      origin:start,
-      destination:end,
-      travelMode: google.maps.TravelMode.DRIVING
-    };
-    directionsService.route(request, function(result, status) {
-      if (status == google.maps.DirectionsStatus.OK) {
-        directionsDisplay.setDirections(result);
-      }
-    });
+  location.lat = 25.0553088;
+  location.lng = 121.5541152;
+  var start = new google.maps.LatLng(location.lat, location.lng);
+  var request = {
+    origin:start,
+    destination:end,
+    travelMode: google.maps.TravelMode.DRIVING
+  };
+  directionsService.route(request, function(result, status) {
+    if (status == google.maps.DirectionsStatus.OK) {
+      directionsDisplay.setDirections(result);
+    }
   });
   console.log("Go");
 }
@@ -530,6 +511,7 @@ function clearRoute(){
   directionsDisplay.setMap(null);
   directionDisplay = null;
 }
+
 var mapShow = {
     //mapShow.TrafficEvent
     TrafficEvent: function() {
@@ -1066,10 +1048,10 @@ function redraw() {
         show = true;
     }
 
-    console.log('show');
-    console.log(show);
     if (!show) {
         showDialog('未選擇顯示項目，標記已清空!');
+    } else {
+      console.log("顯示標記項目");
     }
 
 }
@@ -1208,9 +1190,69 @@ function syncDateTime() {
     $('#lbl-datetime').text(date + ' ' + hh + ':' + mm);
 }
 
-//google.maps.event.addDomListener(window, 'load', initialize);
-$(document).ready(function() {
+function CreateSearchBox(){
+  //Create searchBox on the map
+  var input = document.getElementById('pac-input');
+  var searchBox = new google.maps.places.SearchBox(input);
+  map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
+  // Bias the SearchBox results towards current map's viewport.
+  map.addListener('bounds_changed', function() {
+      searchBox.setBounds(map.getBounds());
+  });
+
+  // Listen for the event fired when the user selects a prediction and retrieve
+  // more details for that place.
+  searchBox.addListener('places_changed', function() {
+      var places = searchBox.getPlaces();
+
+      if (places.length == 0) {
+          return;
+      }
+
+      // Clear out the old markers.
+      clearMarkers();
+
+      // For each place, get the icon, name and location.
+      var bounds = new google.maps.LatLngBounds();
+      places.forEach(function(place) {
+          var info = [];
+          info.title = place.name;
+          info.exinfo = { text: ''};
+          info.exdetail = [{
+            name : '電話：',
+            value: place.formatted_phone_number
+          },{
+            name : '地址：' ,
+            value : place.formatted_address
+          }];
+          var icon = {
+            url: "/img/src/location.png",
+            origin: origin,
+            anchor: searchMarkerAnchor,
+            scaledSize: searchMarkerScaleSize
+          };
+
+          // Create a marker for each place.
+          var marker = new google.maps.Marker({
+              map: map,
+              icon: icon,
+              title: place.name,
+              position: place.geometry.location
+          });
+          addMarkerListener(marker,info);
+
+          if (place.geometry.viewport) {
+              bounds.union(place.geometry.viewport);
+          } else {
+              bounds.extend(place.geometry.location);
+          }
+      });
+      map.fitBounds(bounds);
+  });
+}
+$(document).ready(function() {
+    CreateSearchBox();
     //$('#col-left').height($('#col-left').height());
 
     var dt = new Date();
@@ -1464,7 +1506,7 @@ function btn_click() {
     formItems.parkingType = $('#parking-type').val();
     formItems.parkingHourly = $('#parking-hourly').val();
 
-    console.log(formItems);
+    //console.log(formItems);
 
     if (!$('#modal-wrap').hasClass('hidden')) {
         $('#modal-wrap').addClass('hidden');
