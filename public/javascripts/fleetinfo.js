@@ -16,9 +16,16 @@ var fleetinfo = function() {
         fleetinfo.cars = [];
         for (var i in json) {
             var myLatlng = new google.maps.LatLng(json[i].latitude, json[i].longitude);
+            var icon = {
+                url: "/images/cab.png",
+                origin: origin,
+                anchor: new google.maps.Point(21, 34),
+                scaledSize: new google.maps.Size(40, 40)
+            };
             var marker = new google.maps.Marker({
                 position: myLatlng,
                 // map: map,
+                icon:icon,
                 title: json[i].carId
             });
             fleetinfo.cars.push(marker);

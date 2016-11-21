@@ -1367,8 +1367,8 @@ $(document).ready(function() {
     $("#info-category").on("selectmenuchange", drawDataTable);
 
     //joseph
-    /*$("#fleet-category").selectmenu();
-    $("#fleet-category").on("selectmenuchange", fleetinfo);*/
+    $("#fleet-category").selectmenu();
+    $("#fleet-category").on("selectmenuchange", fleetinfo);
 
     //$("fieldset").controlgroup();
 
