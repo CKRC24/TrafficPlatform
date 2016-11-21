@@ -1,5 +1,6 @@
 var map = null;
 var myCenter = new Object();
+var markers = [];
 
 if (!String.format) {
     String.format = function(format) {
@@ -40,8 +41,8 @@ function initMap() {
     var mapSet = false;
     var setDefaultPos = function (){
         mapSet = true;
-        myCenter.lat = 25.0553088;
-        myCenter.lng = 121.5541152;
+        myCenter.lat = 25.058798;
+        myCenter.lng = 121.554794;
         var myLatlng = new google.maps.LatLng(myCenter.lat, myCenter.lng);
         markers.push(new google.maps.Marker({
             map: map,
@@ -53,9 +54,10 @@ function initMap() {
 
     }
     //browser offers locating service
-    if (navigator.geolocation) {
+    /*if (navigator.geolocation) {
         try {
             navigator.geolocation.getCurrentPosition(function(position) {
+                console.log("Locating service OK");
                 mapSet = true;
                 myCenter.lat = position.coords.latitude;
                 myCenter.lng = position.coords.longitude;
@@ -69,13 +71,16 @@ function initMap() {
                 }));
             });
         }catch (e){
+            console.log("Locating Error");
             setDefaultPos();
         }
-    } else { /* default location for no locating servive browsers */
+    } else { default location for no locating servive browsers
+        console.log("Locating not OK");
         setDefaultPos();
+    }*/
+    if(!mapSet){
+      setDefaultPos();
     }
-    if(!mapSet)
-        setDefaultPos();
 
     map.addListener('center_changed', function() {
         // 3 seconds after the center of the map has changed, pan back to the
@@ -94,59 +99,4 @@ function initMap() {
 
 function initAutocomplete() {
     initMap();
-    // Create the search box and link it to the UI element.
-    var input = document.getElementById('pac-input');
-    var searchBox = new google.maps.places.SearchBox(input);
-    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-
-    // Bias the SearchBox results towards current map's viewport.
-    map.addListener('bounds_changed', function() {
-        searchBox.setBounds(map.getBounds());
-    });
-    // [START region_getplaces]
-    // Listen for the event fired when the user selects a prediction and retrieve
-    // more details for that place.
-    searchBox.addListener('places_changed', function() {
-        var places = searchBox.getPlaces();
-
-        if (places.length == 0) {
-            return;
-        }
-
-        // Clear out the old markers.
-        markers.forEach(function(marker) {
-            marker.setMap(null);
-        });
-        markers = [];
-
-        // For each place, get the icon, name and location.
-        var bounds = new google.maps.LatLngBounds();
-        places.forEach(function(place) {
-            var icon = {
-                url: place.icon,
-                size: new google.maps.Size(71, 71),
-                origin: new google.maps.Point(0, 0),
-                anchor: new google.maps.Point(17, 34),
-                scaledSize: new google.maps.Size(25, 25)
-            };
-
-            // Create a marker for each place.
-            markers.push(new google.maps.Marker({
-                map: map,
-                icon: icon,
-                title: place.name,
-                position: place.geometry.location
-            }));
-
-            if (place.geometry.viewport) {
-                // Only geocodes have viewport.
-                bounds.union(place.geometry.viewport);
-            } else {
-                bounds.extend(place.geometry.location);
-            }
-        });
-        map.fitBounds(bounds);
-    });
-    // [END region_getplaces]
-
 }
