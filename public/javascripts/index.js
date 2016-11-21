@@ -457,6 +457,7 @@ function addMarkerListener(marker, info) {
         showModal(info, markerPosition);
         end = markerPosition;
     });
+    markersArray.push(marker);
 }
 
 function showModal(info, markerPosition) {
@@ -490,8 +491,8 @@ function navigate(end){
   directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
   directionsDisplay.setMap(map);
   var location = new Object();
-  location.lat = 25.0553088;
-  location.lng = 121.5541152;
+  location.lat = 25.058798;
+  location.lng = 121.554794;
   var start = new google.maps.LatLng(location.lat, location.lng);
   var request = {
     origin:start,
@@ -503,7 +504,6 @@ function navigate(end){
       directionsDisplay.setDirections(result);
     }
   });
-  console.log("Go");
 }
 //clear route
 function clearRoute(){
@@ -791,8 +791,6 @@ var mapShow = {
                 });
 
                 addMarkerListener(marker, info);
-
-                markersArray.push(marker);
             }
         });
     },
@@ -929,7 +927,6 @@ var mapShow = {
                         });
 
                         addMarkerListener(marker, info);
-                        markersArray.push(marker);
                     }
                 }
             });
@@ -981,8 +978,6 @@ var mapShow = {
                 title: info.title
             });
             addMarkerListener(marker, info);
-            markersArray.push(marker);
-            //marker.click();
         });
     },
 }
@@ -1212,6 +1207,7 @@ function CreateSearchBox(){
 
       // Clear out the old markers.
       clearMarkers();
+      console.log(markersArray.length);
 
       // For each place, get the icon, name and location.
       var bounds = new google.maps.LatLngBounds();
