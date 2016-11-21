@@ -1263,12 +1263,27 @@ $(document).ready(function() {
             syncDateTime();
         }
     }).val(dthr);
+    $("#hour-spinner2").spinner({
+        max: 23,
+        min: 0,
+        spin: function() {
+            syncDateTime2();
+        }
+    }).val(dthr);
     $("#minute-spinner").spinner({
         max: 55,
         min: 0,
         step: 5,
         spin: function() {
             syncDateTime();
+        }
+    }).val(dtmin);
+    $("#minute-spinner2").spinner({
+        max: 55,
+        min: 0,
+        step: 5,
+        spin: function() {
+            syncDateTime2();
         }
     }).val(dtmin);
 
@@ -1324,6 +1339,16 @@ $(document).ready(function() {
             syncDateTime();
         }
     });
+    $('#calendar2').datepicker({
+        inline: true,
+        firstDay: 1,
+        showOtherMonths: true,
+        dateFormat: "yy-mm-dd",
+        dayNamesMin: ['日', '一', '二', '三', '四', '五', '六'],
+        onSelect: function(dateText, inst) {
+            syncDateTime2();
+        }
+    });
     $("input[name='rdo-time']:first").prop("checked", true);
     $("input[name='rdo-time']").checkboxradio({
         icon: false
@@ -1342,8 +1367,8 @@ $(document).ready(function() {
     $("#info-category").on("selectmenuchange", drawDataTable);
 
     //joseph
-    $("#fleet-category").selectmenu();
-    $("#fleet-category").on("selectmenuchange", fleetinfo);
+    /*$("#fleet-category").selectmenu();
+    $("#fleet-category").on("selectmenuchange", fleetinfo);*/
 
     //$("fieldset").controlgroup();
 
@@ -1556,3 +1581,117 @@ function btn_click() {
     redraw();
     drawDataTable();
 }
+$('#coverage-submit-button').click(coveragebtn_click);
+
+function coveragebtn_click() {
+    setdatasource();
+    drawcoveragechart();
+    calculatecoveragetable();
+
+
+
+
+
+
+}
+
+
+
+function drawcoveragechart() {
+    //$("#chartContainer").empty();
+    //svg = dimple.newSvg("#chartContainer", 750, 800);
+    d3.json($('#lbl-datasource').text(), function (data) {
+        var r = [ ];
+        //alert(Date.parse(dd.slice(0,19)));
+        for (var i in data) {
+
+            r.push([ new Date(Date.parse(data[i].DATA_TIME.slice(0,19)+"+08:00")),
+                data[i].DATA        // line
+            ]);
+        }
+        //document.write( r +"<br>")
+        var orig_range = [ r[0][0].valueOf(), r[r.length -1][0].valueOf() ];
+        var g = new Dygraph(
+            document.getElementById("div_g2"),
+            r, {
+                rollPeriod: 7,
+                animatedZooms: true,
+                // errorBars: true,
+                width: 600,
+                height: 300,
+
+                labels: ["Date", "coverage"]
+            }
+        );
+
+
+    });
+}
+
+
+function setdatasource() {
+    var date = $("#calendar2").val();
+    var area = $("#data-area").val();
+    var scale = $("#data-scale").val();
+    $('#lbl-datasource').text( 'https://ulcac3l8d4.execute-api.ap-northeast-1.amazonaws.com/prod/coverage?scale=' + scale + '&date=' + date + '&region=' + area);
+
+}
+
+
+function calculatecoveragetable(table) {
+    $("#coveragetable-table tbody").html("");
+    d3.json($('#lbl-datasource').text(), function (data){
+        var scale = $("#data-scale").val();
+        if(scale=0)
+
+        var result = new Array(Math.ceil(data.length/12));
+        for(var i=0;i<Math.ceil(data.length/12);i++) {
+            result[i] = new Array(13);
+            result[i][0]=i+'時';}
+
+        for(var j=0;j<Math.ceil(data.length/12);j++)
+            for(var k=0;k<12;k++){
+                var a = j*12+k;
+                if(j==Math.floor(data.length/12)){
+                    if(k>=data.length%12)
+                        result[j][k+1]=0;
+                    else result[j][k+1]=data[a].DATA;
+                }else result[j][k+1]=data[a].DATA;
+                }
+
+        console.dir(result[Math.floor(data.length/12)]);
+        //alert(result.length);
+
+
+
+        $('#coveragetable-table').drawcoverTable(result);
+    });
+
+}
+
+$.fn.extend({
+    drawcoverTable: function(data) {
+        //alert('hi');
+        //console.dir(data[0]);
+
+        var target = $(this);
+        //alert(data.length);
+        for (var min=0;min<data.length;min++){
+            var row = $("<tr>")
+                .append($("<td>").html(data[min][0]))
+                .append($("<td>").html(data[min][1]))
+                .append($("<td>").html(data[min][2]))
+                .append($("<td>").html(data[min][3]))
+                .append($("<td>").html(data[min][4]))
+                .append($("<td>").html(data[min][5]))
+                .append($("<td>").html(data[min][6]))
+                .append($("<td>").html(data[min][7]))
+                .append($("<td>").html(data[min][8]))
+                .append($("<td>").html(data[min][9]))
+                .append($("<td>").html(data[min][10]))
+                .append($("<td>").html(data[min][11]))
+                .append($("<td>").html(data[min][12]));
+            $(target).find("tbody").append(row);}
+        $('#coveragetable-table').removeClass('hidden');
+    }
+});
