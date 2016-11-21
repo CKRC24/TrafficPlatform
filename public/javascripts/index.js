@@ -1211,10 +1211,7 @@ function CreateSearchBox(){
       }
 
       // Clear out the old markers.
-      markersArray.forEach(function(marker) {
-          marker.setMap(null);
-      });
-      markersArray= [];
+      clearMarkers();
 
       // For each place, get the icon, name and location.
       var bounds = new google.maps.LatLngBounds();

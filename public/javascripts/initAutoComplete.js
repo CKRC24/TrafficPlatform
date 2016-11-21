@@ -41,8 +41,8 @@ function initMap() {
     var mapSet = false;
     var setDefaultPos = function (){
         mapSet = true;
-        myCenter.lat = 25.0553088;
-        myCenter.lng = 121.5541152;
+        myCenter.lat = 25.058798;
+        myCenter.lng = 121.554794;
         var myLatlng = new google.maps.LatLng(myCenter.lat, myCenter.lng);
         markers.push(new google.maps.Marker({
             map: map,
@@ -54,9 +54,10 @@ function initMap() {
 
     }
     //browser offers locating service
-    if (navigator.geolocation) {
+    /*if (navigator.geolocation) {
         try {
             navigator.geolocation.getCurrentPosition(function(position) {
+                console.log("Locating service OK");
                 mapSet = true;
                 myCenter.lat = position.coords.latitude;
                 myCenter.lng = position.coords.longitude;
@@ -70,13 +71,16 @@ function initMap() {
                 }));
             });
         }catch (e){
+            console.log("Locating Error");
             setDefaultPos();
         }
-    } else { /* default location for no locating servive browsers */
+    } else { default location for no locating servive browsers
+        console.log("Locating not OK");
         setDefaultPos();
+    }*/
+    if(!mapSet){
+      setDefaultPos();
     }
-    if(!mapSet)
-        setDefaultPos();
 
     map.addListener('center_changed', function() {
         // 3 seconds after the center of the map has changed, pan back to the
