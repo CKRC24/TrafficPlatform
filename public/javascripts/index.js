@@ -1185,6 +1185,11 @@ function syncDateTime() {
     $('#lbl-datetime').text(date + ' ' + hh + ':' + mm);
 }
 
+function syncDateTime2() {
+    var date = $("#calendar2").val();
+    $('#lbl-datetime2').text(date );
+}
+
 function CreateSearchBox(){
   //Create searchBox on the map
   var input = document.getElementById('pac-input');
