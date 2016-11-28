@@ -1,5 +1,14 @@
 var data = null;
-var end = null;
+var start = {
+    lat: 25.058760,
+    lng: 121.554818
+};
+var destination = {
+    lat: 25.101565,
+    lng: 121.547826
+};
+//var end = null;
+
 var mapFlags = {
     trafficFlow: false,
     event: false,
@@ -19,6 +28,7 @@ var rendererOptions = {
 }
 directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
 directionsDisplay.setMap(map);
+
 
 var modal = {
     title: "Modal Title",
@@ -45,12 +55,19 @@ var modal = {
         });
         $('#modal-wrap').find('.exdetail').prop('innerHTML', modal_exdetail)
     },
-    center: function(){
-      var modalHeight = $('#modal-wrap').height();
-      var windowHeight = $('#col-right').height();
-      var topBotMargin = (windowHeight - (modalHeight + 30))/2;
-      $('#modal-wrap').css('margin-top',topBotMargin);
-      $('#modal-wrap').css('margin-bottom',topBotMargin);
+    center: function() {
+        var modalHeight = $('#modal-wrap').height();
+        var windowHeight = $('#col-right').height();
+        var topBotMargin = (windowHeight - (modalHeight + 30)) / 2;
+        $('#modal-wrap').css('margin-top', topBotMargin);
+        $('#modal-wrap').css('margin-bottom', topBotMargin);
+    },
+    setNavigationModalCenter: function() {
+        var modalHeight = $('#navigation-modal').height();
+        var windowHeight = $('#col-right').height();
+        var topBotMargin = (windowHeight - (modalHeight + 30)) / 2;
+        $('#navigation-modal').css('margin-top', topBotMargin);
+        $('#navigation-modal').css('margin-bottom', topBotMargin);
     }
 }
 
@@ -88,7 +105,7 @@ var json_paths = {
         trafficFlow: "http://140.92.88.92:38080/TrafficPlatform/traffic_condition.kml",
         roadinfo: "roadinfo?period=0&lon=121.556916&lat=25.057415&uuid=1234567777",
         roadSpeed: "roadspeed?uuid=1234567777&lon=121.556916&lat=25.057415",
-        parkingInfo: "/json/parkingInfo.json"
+        parkingInfo: "/json/parkingInfo.json",
     },
     instant: {
         CMSSearch: "http://140.92.88.92:38080/CMSSearch/CMSSearch?lon=121.564561&lat=25.033327&range=5000&datetime=201506192321&type=1",
@@ -102,7 +119,8 @@ var json_paths = {
         trafficFlow: "http://140.92.88.92:38080/TrafficPlatform/traffic_condition.kml",
         roadinfo: "roadinfo?period=0&lon=121.556916&lat=25.057415&uuid=1234567777",
         roadSpeed: "roadspeed?uuid=1234567777&lon=121.556916&lat=25.057415",
-        parkingInfo: "parkinginfo?period=0&lon=121.556916&lat=25.057415&range=1000&hourly=0&vendor=0&uuid=1234567777"
+        parkingInfo: "parkinginfo?period=0&lon=121.556916&lat=25.057415&range=1000&hourly=0&vendor=0&uuid=1234567777",
+        routePlan: "http://52.196.208.172:8080/TrafficPlatform/kaiwan/1125112402000055.kml"
     },
     dynamic: {
         CMSSearch: function() {
@@ -163,6 +181,12 @@ var json_paths = {
             //console.log('parkingInfo:');
             //console.log(targetUrl);
             return targetUrl;
+        },
+        //json_paths.dynamic.routePlan
+        routePlan: function() {
+            var path = String.format("routeplan?srclon={0}&srclat={1}&dstlon={2}&dstlat={3}", start.lng, start.lat, destination.lng, destination.lat);
+            var targetUrl = BaseUrl + path;
+            return targetUrl;
         }
     }
 };
@@ -174,13 +198,15 @@ var searchMarkerAnchor = new google.maps.Point(21, 34);
 var iconSize = new google.maps.Size(29, 39);
 var iconAnchor = new google.maps.Point(14.5, 37);
 var eventMarkerSize = new google.maps.Size(42, 50);
-var eventMarkerAnchor = new google.maps.Point(21,46);
+var eventMarkerAnchor = new google.maps.Point(21, 46);
 var parkingMarkerSize = new google.maps.Size(34, 47);
 var parkingMarkerAnchor = new google.maps.Point(17, 47);
 var parkingLabelAnchor = new google.maps.Point(20, 37);
 var speedMarkerSize = new google.maps.Size(34, 38);
 var speedMarkerAnchor = new google.maps.Point(17, 38);
 var speedLabelAnchor = new google.maps.Point(20, 29);
+var navigationAnchor = new google.maps.Point(17, 34);
+var navigationSize = new google.maps.Size(20, 35);
 
 
 var markerIcons = {
@@ -293,17 +319,18 @@ var markerIcons = {
         url: "/img/markers/pin-park-max.png",
         anchor: parkingMarkerAnchor,
         scaledSize: parkingMarkerSize
-    }]
+    }],
+    startIcon: {
+        url: "/img/src/pin-start.png",
+        anchor: navigationAnchor,
+        scaledSize: navigationSize
+    },
+    endIcon: {
+        url: "/img/src/pin-final.png",
+        anchor: navigationAnchor,
+        scaledSize: navigationSize
+    }
 };
-
-/*function clone(obj) {
-    if (obj == null || typeof(obj) != 'object')
-        return obj;
-    var temp = obj.constructor();
-    for (var key in obj)
-        temp[key] = clone(obj[key]);
-    return temp;
-}*/
 
 google.maps.Map.prototype.clearOverlays = function() {
     if (ctaLayer != null) {
@@ -346,7 +373,6 @@ function clearMarkers() {
         for (var i = 0; i < markersArray.length; i++) {
             markersArray[i].setMap(null);
         }
-        clearRoute();
     }
     markersArray = [];
 }
@@ -452,6 +478,7 @@ function addMarkerWithInfo(myLatlng, info, icon, thisMap) {
 }
 
 function addMarkerListener(marker, info) {
+    console.log("Add Marker Listen");
     google.maps.event.addListener(marker, 'click', function() {
         var markerPosition = marker.getPosition();
         showModal(info, markerPosition);
@@ -461,10 +488,13 @@ function addMarkerListener(marker, info) {
 }
 
 function showModal(info, markerPosition) {
+    console.log("Show Ordinary Modal");
+    $('#modal-wrap').addClass('hidden');
     modal.title = info.title;
     modal.exinfo = info.exinfo;
     modal.exdetail = info.exdetail;
     modal.setup();
+
     $('#modal-wrap').css('opacity', 0);
     $('#modal-wrap').removeClass('hidden');
     $('#modal-wrap').animate({
@@ -485,31 +515,81 @@ function showModal(info, markerPosition) {
     //}, 500);
 }
 
-//navigate to destination
-function navigate(end){
-  clearRoute();
-  directionsDisplay = new google.maps.DirectionsRenderer(rendererOptions);
-  directionsDisplay.setMap(map);
-  var location = new Object();
-  location.lat = 25.058798;
-  location.lng = 121.554794;
-  var start = new google.maps.LatLng(location.lat, location.lng);
-  var request = {
-    origin:start,
-    destination:end,
-    travelMode: google.maps.TravelMode.DRIVING
-  };
-  directionsService.route(request, function(result, status) {
-    if (status == google.maps.DirectionsStatus.OK) {
-      directionsDisplay.setDirections(result);
-    }
-  });
+//navigate modal
+function setUpNavigation() {
+    $('#navigate-modal-footer').removeClass('hidden');
+    $('#navigation-input').removeClass('hidden');
+    $('#routeInfo').addClass('hidden');
+    $('#modal-routeSearch').removeClass('hidden');
+    //$('#modal-navigate').addClass('hidden');
+    //set origin searchBox
+    var origin_input = document.getElementById('origin-input');
+    var origin_autocomplete = new google.maps.places.Autocomplete(origin_input);
+    origin_autocomplete.bindTo('bounds', map);
+
+    //set destination searchBox
+    var destination_input = document.getElementById('destination-input');
+    var destination_autocomplete = new google.maps.places.Autocomplete(destination_input);
+    destination_autocomplete.bindTo('bounds', map);
+    showNavigationModal();
+
+    //Listen to User input
+    origin_autocomplete.addListener('place_changed', function() {
+        var place = origin_autocomplete.getPlace();
+        if (!place.geometry) {
+            return;
+        } else {
+            start.lat = place.geometry.location.lat();
+            start.lng = place.geometry.location.lng();
+        }
+    });
+    destination_autocomplete.addListener('place_changed', function() {
+        var place = destination_autocomplete.getPlace();
+        if (!place.geometry) {
+            return;
+        } else {
+            destination.lat = place.geometry.location.lat();
+            destination.lng = place.geometry.location.lng();
+        }
+    });
+
+    $('#modal-routeSearch').click(function() {
+        mapShow.routePlan();
+        $('#navigate-modal-footer').addClass('hidden');
+    });
+
+    $('#modal-navigate-dismiss').click(function() {
+        $('#navigation-modal').addClass('hidden');
+    });
 }
-//clear route
-function clearRoute(){
-  console.log("clear");
-  directionsDisplay.setMap(null);
-  directionDisplay = null;
+
+function showNavigationModal() {
+    console.log("Show Navigate Modal");
+    $('#modal-wrap').addClass('hidden');
+    $('#navigation-modal').css('opacity', 0);
+    $('#navigation-modal').removeClass('hidden');
+    $('#navigation-modal').animate({
+        opacity: 1
+    }, 300);
+    modal.setNavigationModalCenter();
+    var modalHeight = $('.modal-app-msg').height();
+}
+//modify Navigation Modal
+function modifyNavigationModal(json) {
+    var routeInfo = "";
+    //Fastest Route info
+    var fastestRoute = "";
+    fastestRoute += String.format("<div id=\"fastestRoute\"><a href=\"#\"><h2>路徑1-最快到達</h2><p>{0}分鐘<span> {1} 公里</span></p></a></div>", json.fastest.time, json.fastest.length);
+    // Shortest Route info
+    var shortestRoute = "";
+    shortestRoute += String.format("<div id=\"shortestRoute\"><a href=\"#\"><h2>路徑2-最短距離</h2><p>{0}分鐘<span> {1} 公里</span></p></a></div>", json.shortest.time, json.shortest.length);
+    routeInfo = fastestRoute + shortestRoute;
+    $('#navigation-modal').find('#routeInfo').prop('innerHTML', routeInfo);
+    $('#modal-footer').addClass('hidden');
+    $('#modal-routeSearch').addClass('hidden');
+    //$('#modal-navigate').removeClass('hidden');
+    $('#routeInfo').removeClass('hidden');
+    $('#navigation-input').addClass('hidden');
 }
 
 var mapShow = {
@@ -623,6 +703,64 @@ var mapShow = {
         });
 
         return path;
+    },
+    //mapShow.routePlan
+    routePlan: function() {
+        var path = json_paths.dynamic.routePlan();
+        console.log(path);
+        $.getJSON(path, function(json) {
+            if (json)
+                modifyNavigationModal(json);
+            $('#fastestRoute').click(function() {
+                console.log("Fastest Route");
+                json_path.routePlan = json.fastest.kml;
+                mapShow.navigate();
+                mapShow.timer(json.fastest.time);
+            });
+            $('#shortestRoute').click(function() {
+                console.log("Shortest Route");
+                json_path.routePlan = json.shortest.kml;
+                mapShow.navigate();
+                mapShow.timer(json.shortest.time);
+            });
+        });
+    },
+    //mapShow.navigate
+    navigate: function() {
+        google.maps.Map.prototype.clearOverlays();
+        ctaLayer = new google.maps.KmlLayer({
+            url: json_path.routePlan,
+            map: map,
+            preserveViewport: true
+        });
+        console.log(ctaLayer.url);
+        //push start & end marker
+        markersArray.push(new google.maps.Marker({
+            map: map,
+            position: new google.maps.LatLng(start.lat, start.lng),
+            icon: markerIcons.startIcon
+        }));
+        markersArray.push(new google.maps.Marker({
+            map: map,
+            position: new google.maps.LatLng(destination.lat, destination.lng),
+            icon: markerIcons.endIcon
+        }));
+        google.maps.event.addListener(ctaLayer, 'click', function(kmlEvent) {
+            console.log('kmlEvent:');
+            console.log(kmlEvent.latLng);
+            mapShow.roadSpeed(kmlEvent.latLng);
+        });
+        $('#navigation-modal').addClass('hidden');
+        map.panTo(start);
+        map.setZoom(16);
+    },
+    //mapShow.timer
+    timer: function(json){
+      console.log("show timer");
+      $('#timer').removeClass('hidden');
+      var timerDiv = "";
+      timerDiv += String.format("<h2>預估<big>{0}</big>分後到達</h2>",json);
+      $('#timer').prop('innerHTML',timerDiv);
     },
     //mapShow.ParkingInfo
     ParkingInfo: function() {
@@ -1046,8 +1184,10 @@ function redraw() {
     if (!show) {
         showDialog('未選擇顯示項目，標記已清空!');
     } else {
-      console.log("顯示標記項目");
+        console.log("顯示標記項目");
     }
+    //hide timer
+    $('#timer').addClass('hidden');
 
 }
 
@@ -1086,20 +1226,6 @@ $.fn.extend({
     }
 });
 
-/*
-function drawTable() {
-    $.getJSON($('#demo-table').data("url"), function(json) {
-        if (json && json.length > 0) {
-            $.each(json[0], function(key, value) {
-                //alert(key + ": " + value);
-                $('#demo-table').find("thead").find("tr").append(String.format("<th data-key='{0}'>{0}</th>", key));
-            });
-        }
-
-    });
-}
-*/
-
 
 function SetCenter() {
     //var gCenter = map.getCenter();
@@ -1116,6 +1242,7 @@ function SetCenter() {
     json_path.parkingInfo = json_paths.dynamic.parkingInfo();
     //json_path.roadSpead = json_paths.dynamic.roadSpead();
     //json_paths.dynamic.trafficFlow();
+    json_path.routePlan = json_paths.dynamic.routePlan();
 }
 
 
@@ -1187,70 +1314,103 @@ function syncDateTime() {
 
 function syncDateTime2() {
     var date = $("#calendar2").val();
-    $('#lbl-datetime2').text(date );
+    $('#lbl-datetime2').text(date);
 }
 
-function CreateSearchBox(){
-  //Create searchBox on the map
-  var input = document.getElementById('pac-input');
-  var searchBox = new google.maps.places.SearchBox(input);
-  map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+/*function StartPositionSetUp() {
+    var input = document.getElementById('start-input');
+    var searchBox = new google.maps.places.SearchBox(input);
+    searchBox.addListener('places_changed', function() {
+        var places = searchBox.getPlaces();
+        places.forEach(function(place) {
+            var icon = {
+                url: "/img/src/location.png",
+                origin: origin,
+                anchor: searchMarkerAnchor,
+                scaledSize: searchMarkerScaleSize
+            };
 
-  // Bias the SearchBox results towards current map's viewport.
-  map.addListener('bounds_changed', function() {
-      searchBox.setBounds(map.getBounds());
-  });
+            // Create a marker for each place.
+            var marker = new google.maps.Marker({
+                map: map,
+                icon: icon,
+                title: place.name,
+                position: place.geometry.location
+            });
+            markersArray.push(marker);
+            if (place.geometry.viewport) {
+                bounds.union(place.geometry.viewport);
+            } else {
+                bounds.extend(place.geometry.location);
+            }
+        });
+        map.fitBounds(bounds);
+    });
+}*/
 
-  // Listen for the event fired when the user selects a prediction and retrieve
-  // more details for that place.
-  searchBox.addListener('places_changed', function() {
-      var places = searchBox.getPlaces();
+function CreateSearchBox() {
+    //Create searchBox on the map
+    var input = document.getElementById('pac-input');
+    var searchBox = new google.maps.places.SearchBox(input);
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+    // Bias the SearchBox results towards current map's viewport.
+    map.addListener('bounds_changed', function() {
+        searchBox.setBounds(map.getBounds());
+    });
 
-      if (places.length == 0) {
-          return;
-      }
+    // Listen for the event fired when the user selects a prediction and retrieve
+    // more details for that place.
+    searchBox.addListener('places_changed', function() {
+        var places = searchBox.getPlaces();
 
-      // Clear out the old markers.
-      clearMarkers();
-      console.log(markersArray.length);
+        if (places.length == 0) {
+            return;
+        }
 
-      // For each place, get the icon, name and location.
-      var bounds = new google.maps.LatLngBounds();
-      places.forEach(function(place) {
-          var info = [];
-          info.title = place.name;
-          info.exinfo = { text: ''};
-          info.exdetail = [{
-            name : '電話：',
-            value: place.formatted_phone_number
-          },{
-            name : '地址：' ,
-            value : place.formatted_address
-          }];
-          var icon = {
-            url: "/img/src/location.png",
-            origin: origin,
-            anchor: searchMarkerAnchor,
-            scaledSize: searchMarkerScaleSize
-          };
+        // Clear out the old markers.
+        clearMarkers();
+        console.log(markersArray.length);
 
-          // Create a marker for each place.
-          var marker = new google.maps.Marker({
-              map: map,
-              icon: icon,
-              title: place.name,
-              position: place.geometry.location
-          });
-          addMarkerListener(marker,info);
+        // For each place, get the icon, name and location.
+        var bounds = new google.maps.LatLngBounds();
+        places.forEach(function(place) {
+            var info = [];
+            info.title = place.name;
+            info.exinfo = {
+                text: ''
+            };
+            info.exdetail = [{
+                name: '電話：',
+                value: place.formatted_phone_number
+            }, {
+                name: '地址：',
+                value: place.formatted_address
+            }];
+            var icon = {
+                url: "/img/src/location.png",
+                origin: origin,
+                anchor: searchMarkerAnchor,
+                scaledSize: searchMarkerScaleSize
+            };
 
-          if (place.geometry.viewport) {
-              bounds.union(place.geometry.viewport);
-          } else {
-              bounds.extend(place.geometry.location);
-          }
-      });
-      map.fitBounds(bounds);
-  });
+            // Create a marker for each place.
+            var marker = new google.maps.Marker({
+                map: map,
+                icon: icon,
+                title: place.name,
+                position: place.geometry.location
+            });
+            addMarkerListener(marker, info);
+
+            if (place.geometry.viewport) {
+                bounds.union(place.geometry.viewport);
+            } else {
+                bounds.extend(place.geometry.location);
+            }
+        });
+        map.fitBounds(bounds);
+    });
+
 }
 $(document).ready(function() {
     CreateSearchBox();
@@ -1479,7 +1639,7 @@ $(document).ready(function() {
 
     $('#flipswitch').change(function() {
         console.log($(this).prop('checked'));
-        if($(this).prop('checked')== false){
+        if ($(this).prop('checked') == false) {
             $('input[name="rdo-conv"]').prop("checked", false).checkboxradio('refresh');
         }
     });
@@ -1502,21 +1662,25 @@ $(document).ready(function() {
         //alert('change');
     });
 
-    //$('#road-submit-button').click(btn_click);
     $('#road-submit-button2').click(btn_click);
 
     $('#modal-btn-close').click(function() {
         $('#modal-wrap').addClass('hidden');
-    })
+    });
+    $('#modal-navigate-btn-close').click(function() {
+        $('#navigation-modal').addClass('hidden');
+    });
 
     $('#modal-dismiss').click(function() {
         $('#modal-wrap').addClass('hidden');
-    })
-
+    });
+    $('#navigation-button').click(function() {
+        setUpNavigation();
+    });
     $('#modal-goto').click(function() {
         $('#modal-wrap').addClass('hidden');
-        navigate(end);
-    })
+        setUpNavigation();
+    });
 
     var currentDate = $(".selector").datepicker("getDate");
 });
@@ -1583,6 +1747,7 @@ function btn_click() {
         }
     }
 
+
     redraw();
     drawDataTable();
 }
@@ -1592,12 +1757,6 @@ function coveragebtn_click() {
     setdatasource();
     drawcoveragechart();
     calculatecoveragetable();
-
-
-
-
-
-
 }
 
 
@@ -1605,17 +1764,17 @@ function coveragebtn_click() {
 function drawcoveragechart() {
     //$("#chartContainer").empty();
     //svg = dimple.newSvg("#chartContainer", 750, 800);
-    d3.json($('#lbl-datasource').text(), function (data) {
-        var r = [ ];
+    d3.json($('#lbl-datasource').text(), function(data) {
+        var r = [];
         //alert(Date.parse(dd.slice(0,19)));
         for (var i in data) {
 
-            r.push([ new Date(Date.parse(data[i].DATA_TIME.slice(0,19)+"+08:00")),
-                data[i].DATA        // line
+            r.push([new Date(Date.parse(data[i].DATA_TIME.slice(0, 19) + "+08:00")),
+                data[i].DATA // line
             ]);
         }
         //document.write( r +"<br>")
-        var orig_range = [ r[0][0].valueOf(), r[r.length -1][0].valueOf() ];
+        var orig_range = [r[0][0].valueOf(), r[r.length - 1][0].valueOf()];
         var g = new Dygraph(
             document.getElementById("div_g2"),
             r, {
@@ -1638,33 +1797,34 @@ function setdatasource() {
     var date = $("#calendar2").val();
     var area = $("#data-area").val();
     var scale = $("#data-scale").val();
-    $('#lbl-datasource').text( 'https://ulcac3l8d4.execute-api.ap-northeast-1.amazonaws.com/prod/coverage?scale=' + scale + '&date=' + date + '&region=' + area);
+    $('#lbl-datasource').text('https://ulcac3l8d4.execute-api.ap-northeast-1.amazonaws.com/prod/coverage?scale=' + scale + '&date=' + date + '&region=' + area);
 
 }
 
 
 function calculatecoveragetable(table) {
     $("#coveragetable-table tbody").html("");
-    d3.json($('#lbl-datasource').text(), function (data){
+    d3.json($('#lbl-datasource').text(), function(data) {
         var scale = $("#data-scale").val();
-        if(scale=0)
+        if (scale = 0)
 
-        var result = new Array(Math.ceil(data.length/12));
-        for(var i=0;i<Math.ceil(data.length/12);i++) {
+            var result = new Array(Math.ceil(data.length / 12));
+        for (var i = 0; i < Math.ceil(data.length / 12); i++) {
             result[i] = new Array(13);
-            result[i][0]=i+'時';}
+            result[i][0] = i + '時';
+        }
 
-        for(var j=0;j<Math.ceil(data.length/12);j++)
-            for(var k=0;k<12;k++){
-                var a = j*12+k;
-                if(j==Math.floor(data.length/12)){
-                    if(k>=data.length%12)
-                        result[j][k+1]=0;
-                    else result[j][k+1]=data[a].DATA;
-                }else result[j][k+1]=data[a].DATA;
-                }
+        for (var j = 0; j < Math.ceil(data.length / 12); j++)
+            for (var k = 0; k < 12; k++) {
+                var a = j * 12 + k;
+                if (j == Math.floor(data.length / 12)) {
+                    if (k >= data.length % 12)
+                        result[j][k + 1] = 0;
+                    else result[j][k + 1] = data[a].DATA;
+                } else result[j][k + 1] = data[a].DATA;
+            }
 
-        console.dir(result[Math.floor(data.length/12)]);
+        console.dir(result[Math.floor(data.length / 12)]);
         //alert(result.length);
 
 
@@ -1681,7 +1841,7 @@ $.fn.extend({
 
         var target = $(this);
         //alert(data.length);
-        for (var min=0;min<data.length;min++){
+        for (var min = 0; min < data.length; min++) {
             var row = $("<tr>")
                 .append($("<td>").html(data[min][0]))
                 .append($("<td>").html(data[min][1]))
@@ -1696,7 +1856,8 @@ $.fn.extend({
                 .append($("<td>").html(data[min][10]))
                 .append($("<td>").html(data[min][11]))
                 .append($("<td>").html(data[min][12]));
-            $(target).find("tbody").append(row);}
+            $(target).find("tbody").append(row);
+        }
         $('#coveragetable-table').removeClass('hidden');
     }
 });

@@ -75,7 +75,16 @@ body .ui-menu {
 #but-wrap {
     margin: 10px auto;
 }
-
+#navigation-button{
+  width: 98%;
+  height: 40px;
+  /* padding: 30px; */
+  vertical-align: middle;
+  margin: auto;
+  /* left: 0px; */
+  /* right: 0px; */
+  display: block;
+}
 #road-submit-button,
 #road-submit-button2 {
     width: 98%;
@@ -128,7 +137,9 @@ legend {
 .hidden {
     display: none !important;
 }
-
+#fastestRoute:hover,#shortestRoute:hover{
+  background:#fcf7f3;
+}
 #main-container {
     //margin-top: 85px;
     //display:table-row;
@@ -391,7 +402,10 @@ legend {
     outline: none;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
-
+#timer{
+  padding:20px;
+  color:red;
+}
 #pac-input {
     background-color: #fff;
     font-family: Roboto;
@@ -400,12 +414,23 @@ legend {
     margin-left: 12px;
     padding: 0 11px 0 13px;
     text-overflow: ellipsis;
-    width: 300px;
+    width: 250px;
 }
 
-#pac-input:focus {
+#pac-input:focus,#start-input:focus {
     border-color: #4d90fe;
 }
+
+#start-input {
+    background-color: #fff;
+    font-family: Roboto;
+    font-size: 15px;
+    font-weight: 300;
+    padding: 0 11px 0 13px;
+    text-overflow: ellipsis;
+    width: 250px;
+}
+
 
 .pac-container {
     font-family: Roboto;
@@ -550,7 +575,7 @@ legend {
     color: #fff;
 }
 
-#modal-wrap {
+#navigation-modal,#modal-wrap {
     -moz-box-sizing: border-box;
     position: absolute;
     top: 0;

@@ -95,6 +95,9 @@ function initMap() {
             }
         }
     });
+    //set timer position
+    var timerValue = document.getElementById('timer');
+    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(timerValue);
 }
 
 function initAutocomplete() {

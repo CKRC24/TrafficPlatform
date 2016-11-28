@@ -17,7 +17,7 @@
     <script src="/javascripts/jquery-ui-1.12.0.js" aync></script>
     <script src="/javascripts/simple.datagrid.js" aync></script>
     <script src="/javascripts/jquery.switchButton.js" aync></script>
-    <script src="/js/bootstrap.min.js"></script>
+    <script src="/javascripts/bootstrap.min.js"></script>
     <script src="/javascripts/d3.v3.min.js"></script>
     <script src="/javascripts/dimple.v2.2.0.min.js"></script>
     <script src="http://dygraphs.com/1.1.1/dygraph-combined-dev.js"></script>
@@ -171,9 +171,9 @@
                                             <input type="checkbox" name="rdo-conv" id="rdo-conv-8" value="carWasher">
                                         </fieldset>
                                         <div class="left-col-but-wrap">
-                                            <!--<div id="but-wrap">
-                                                <input id="road-submit-button" class="ui-button ui-widget ui-corner-all" type="submit" value="查詢">
-                                            </div>-->
+                                            <div id="but-wrap">
+                                                <input id="navigation-button" class="ui-button ui-widget ui-corner-all" type="submit" value="路徑規劃">
+                                            </div>
                                             <fieldset id="coverage-field">
                                                 <legend> 涵蓋率顯示 </legend>
                                                 <div class="table-wrap">
@@ -201,9 +201,9 @@
                                                         <div class="table-column table-col-left">車隊類別</div>
                                                         <div class="table-column table-col-right">
                                                             <select name="車隊類別" id="fleet-category">
-                                                                 <option value="none"></option>
+                                                                 <option value="none"selected="selected">無</option>
                                                                  <option value="eup">弋揚</option>
-                                                                 <option value="gstech" selected="selected">長暉</option>
+                                                                 <option value="gstech" >長暉</option>
                                                              </select>
                                                         </div>
                                                     </div>
@@ -247,11 +247,11 @@
                                                         </div>
                                                         <!--  modal body end -->
                                                         <!-- 按鈕 -->
-                                                        <div class="modal-footer">
-                                                          <div class="row">
-                                                              <a id="modal-dismiss" href="javascript:void(0)" class="btn lightblue" data-dismiss="modal">知道了</a>
-                                                              <a id="modal-goto" href="#" class="btn lightblue">前往此處</a>
-                                                          </div>
+                                                        <div  class="modal-footer">
+                                                            <div class="row">
+                                                                <a id="modal-dismiss" href="javascript:void(0)" class="btn lightblue" data-dismiss="modal">知道了</a>
+                                                                <a id="modal-goto" href="#" class="btn lightblue">前往此處</a>
+                                                            </div>
                                                         </div>
                                                         <div id="modal-pointer" class="">
                                                             <div class="pointer-left-outer">
@@ -268,7 +268,55 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+                                    <div class="wrapper">
+                                        <div id="navigation-modal" class="hidden ">
+                                            <div class="modal-app-msg">
+                                                <div class="modal-dialog app-msg ">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <button id="modal-navigate-btn-close" type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-times" aria-hidden="true"></i></button>
+                                                            <h4 class="modal-title">路徑規劃</h4>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="exdetail">
+                                                                <div id="routeInfo" class="hidden">
+                                                                    <h2>路徑1-最快到達</h2>
+                                                                    <p>20 分鐘 <span>5.4 公里</span></p>
+                                                                    <h2>路徑2-最短距離</h2>
+                                                                    <p>20 分鐘 <span>4.5 公里</span></p>
+                                                                </div>
+                                                                <div id="navigation-input">
+                                                                    <p>
+                                                                        出發地:
+                                                                        <span><input id="origin-input" class="controls" type="text" value="目前位置"></span>
+                                                                    </p>
+                                                                    <p>
+                                                                        目的地:
+                                                                        <span><input id="destination-input" class="controls" type="text" ></span>
+                                                                    </p>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                        <!--  modal body end -->
+                                                        <!-- 按鈕 -->
+                                                        <div class="modal-footer">
+                                                            <div id="navigate-modal-footer" class="row">
+                                                                <a id="modal-navigate-dismiss" href="javascript:void(0)" class="btn lightblue" data-dismiss="modal">知道了</a>
+                                                                <a id="modal-routeSearch" href="#" class="btn lightblue">查詢路徑</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- /.modal-content -->
+                                                </div>
+                                                <!-- /.modal-dialog -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input id="pac-input" class="controls" type="text" placeholder="搜尋地點">
+                                    <div id="timer" class="hidden">
+                                      <h2>預估<big>{0}</big>分後到達</h2>
+                                    </div>
                                     <div id="map_canvas" class="spanning a-table">&nbsp;</div>
                                 </div>
                             </div>
