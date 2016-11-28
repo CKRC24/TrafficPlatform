@@ -7,7 +7,6 @@ var destination = {
     lat: 25.101565,
     lng: 121.547826
 };
-//var end = null;
 
 var mapFlags = {
     trafficFlow: false,
@@ -120,7 +119,8 @@ var json_paths = {
         roadinfo: "roadinfo?period=0&lon=121.556916&lat=25.057415&uuid=1234567777",
         roadSpeed: "roadspeed?uuid=1234567777&lon=121.556916&lat=25.057415",
         parkingInfo: "parkinginfo?period=0&lon=121.556916&lat=25.057415&range=1000&hourly=0&vendor=0&uuid=1234567777",
-        routePlan: "http://52.196.208.172:8080/TrafficPlatform/kaiwan/1125112402000055.kml"
+        routePlan: "http://52.196.208.172:8080/TrafficPlatform/kaiwan/1125112402000055.kml",
+        coverage:"http://52.196.208.172:8080/Coverage"
     },
     dynamic: {
         CMSSearch: function() {
@@ -482,7 +482,8 @@ function addMarkerListener(marker, info) {
     google.maps.event.addListener(marker, 'click', function() {
         var markerPosition = marker.getPosition();
         showModal(info, markerPosition);
-        end = markerPosition;
+        destination.lat = markerPosition.lat();
+        destination.lng = markerPosition.lng();
     });
     markersArray.push(marker);
 }
@@ -505,7 +506,6 @@ function showModal(info, markerPosition) {
     //window.setTimeout(function() {
     map.panToWithOffset(markerPosition, -1, modalHeight * -1 / 2 - 55);
     //}, 1000);
-
     //window.setTimeout(function() {
     $('#modal-pointer').css('opacity', 0);
     $('#modal-pointer').removeClass('hidden');
@@ -514,14 +514,17 @@ function showModal(info, markerPosition) {
     }, 300);
     //}, 500);
 }
-
+function directNavigation(){
+  $('#')
+  mapShow.routePlan();
+  showNavigationModal();
+}
 //navigate modal
 function setUpNavigation() {
     $('#navigate-modal-footer').removeClass('hidden');
     $('#navigation-input').removeClass('hidden');
     $('#routeInfo').addClass('hidden');
     $('#modal-routeSearch').removeClass('hidden');
-    //$('#modal-navigate').addClass('hidden');
     //set origin searchBox
     var origin_input = document.getElementById('origin-input');
     var origin_autocomplete = new google.maps.places.Autocomplete(origin_input);
@@ -585,7 +588,7 @@ function modifyNavigationModal(json) {
     shortestRoute += String.format("<div id=\"shortestRoute\"><a href=\"#\"><h2>路徑2-最短距離</h2><p>{0}分鐘<span> {1} 公里</span></p></a></div>", json.shortest.time, json.shortest.length);
     routeInfo = fastestRoute + shortestRoute;
     $('#navigation-modal').find('#routeInfo').prop('innerHTML', routeInfo);
-    $('#modal-footer').addClass('hidden');
+    $('#navigate-modal-footer').addClass('hidden');
     $('#modal-routeSearch').addClass('hidden');
     //$('#modal-navigate').removeClass('hidden');
     $('#routeInfo').removeClass('hidden');
@@ -1204,24 +1207,27 @@ function showDialogCalender() {
 
 
 $.fn.extend({
-    drawTable: function(url) {
-        //alert('hi');
+    drawTable: function() {
+      console.log("Draw");
         $(this).empty();
         $(this).addClass('simple-data-grid');
         $(this).append("<thead><tr></tr></thead>");
         $(this).append("<tbody><tr></tr></tbody>");
         var target = $(this);
 
-        $.getJSON(url, function(json) {
-            //var seltor = $(this).selector;
-            if (json && json.length > 0) {
-                $.each(json[0], function(key, value) {
-                    //alert(key + ": " + value);
-                    $(target).find("thead").find("tr").append(String.format('<th data-key="{0}" class="sdg-col_{0}">{0}</th>', key));
-                    $(target).find("tbody").find("tr").append(String.format('<td class="sdg-col_{0}">{1}</td>', key, value));
-                });
+        $.getJSON(json_path.coverage, function(json) {
+          console.log("coverage json");
+          var countyLength = Object.keys(json).length;
+            if (json && Object.keys(json).length > 0) {
+              var county = "";
+              var coverage = "";
+              county = Object.keys(json).toString().split(",");
+              coverage = Object.values(json).toString().split(",");
+              for( var i = 1; i < countyLength ; i++){
+                $(target).find("thead").find("tr").append(String.format('<th data-key="{0}" class="sdg-col_{0}">{0}</th>',county[i]));
+                $(target).find("tbody").find("tr").append(String.format('<td class="sdg-col_{0}">{1}</td>', county[i],coverage[i]));
+              }
             }
-
         });
     }
 });
@@ -1243,18 +1249,18 @@ function SetCenter() {
     //json_path.roadSpead = json_paths.dynamic.roadSpead();
     //json_paths.dynamic.trafficFlow();
     json_path.routePlan = json_paths.dynamic.routePlan();
+
 }
 
 
 function drawDataTable() {
     var infoCat = $("#info-category").val();
-    //alert(infoCat);
     switch (infoCat) {
         case 'county':
-            $('#coverage-table').drawTable('/json/county.json');
+            $('#coverage-table').drawTable();
             break;
         case 'roads':
-            $('#coverage-table').drawTable('/json/road.json');
+            $('#coverage-table').drawTable();
             break;
     }
 }
@@ -1679,7 +1685,7 @@ $(document).ready(function() {
     });
     $('#modal-goto').click(function() {
         $('#modal-wrap').addClass('hidden');
-        setUpNavigation();
+        directNavigation();
     });
 
     var currentDate = $(".selector").datepicker("getDate");
