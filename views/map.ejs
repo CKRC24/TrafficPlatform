@@ -1,0 +1,16 @@
+<div id="map-panel" class="hidden">&nbsp;</div>
+<div id="right-panel">
+    <div id="traffic-button" class="panel-buttons" data-btn-type="traffic"></div>
+    <div id="event-button" class="panel-buttons" data-btn-type="event"></div>
+    <div id="parking-button" class="panel-buttons" data-btn-type="parking"></div>
+    <div id="but-wrap">
+        <input id="road-submit-button2" class="ui-button ui-widget ui-corner-all" type="submit" value="查詢">
+    </div>
+    <div id="vd-button" class="panel-buttons hidden" data-btn-type="vd"></div>
+</div>
+<%- include modal %>
+<input id="pac-input" class="controls" type="text" placeholder="搜尋地點">
+<div id="timer" class="hidden">
+  <h2>預估<big>{0}</big>分後到達</h2>
+</div>
+<div id="map_canvas" class="spanning a-table">&nbsp;</div>

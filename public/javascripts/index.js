@@ -1207,6 +1207,7 @@ function showDialogCalender() {
 
 
 $.fn.extend({
+    //draw coverage table
     drawTable: function() {
       console.log("Draw");
         $(this).empty();
@@ -1553,8 +1554,6 @@ $(document).ready(function() {
             showDialogCalender();
         } else {
             $('#calender-wrap').addClass('hidden');
-            //$('#lbl-datetime-caption').text('');
-            //$('#lbl-time-left').text('');
             $('#datetime-table').addClass('hidden');
         }
     });

@@ -39,6 +39,9 @@ body .ui-selectmenu-button.ui-button {
 body .ui-menu {
   max-height: 150px; }
 
+/*body {
+  padding-top: 50px;
+}*/
 #calender-wrap .ui-widget-content {
   background-color: transparent; }
 
@@ -54,9 +57,6 @@ body .ui-menu {
 
 #form-wrap .ui-checkboxradio-label {
   width: 90px; }
-
-#but-wrap {
-  margin: 10px auto; }
 
 #navigation-button {
   width: 98%;
@@ -113,6 +113,9 @@ legend {
 #fastestRoute:hover, #shortestRoute:hover {
   background: #fcf7f3; }
 
+#tabs-1 {
+  margin-top: 20px; }
+
 .table-wrap {
   width: 100%;
   display: table; }
@@ -132,7 +135,6 @@ legend {
 .container {
   width: 100%;
   height: 100%;
-  overflow: hidden;
   transform: translateZ(0px); }
 
 #col-left {
@@ -649,6 +651,9 @@ legend {
 
 #vd-button.on {
   background-image: url("/img/btn/btn_enabled05.png"); }
+
+.left-col-but-wrap {
+  margin: 10px auto; }
 
 #form-dialog {
   width: 400px;
