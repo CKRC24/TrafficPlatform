@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+    <title>交通查詢平台</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" charset="UTF-8" />
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link rel="shortcut icon" href="/img/favicon.html">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <!--<link rel="stylesheet" type="text/css" href="/stylesheets/css/index.css" />-->
+    <link rel="stylesheet" type="text/css" href="/stylesheets/css/index_test.css" />
+    <link rel="stylesheet" type="text/css" href="/stylesheets/css/simple.datagrid.css" />
+    <link rel="stylesheet" type="text/css" href="/stylesheets/css/jquery.switchButton.css" />
+    <link rel="stylesheet" type="text/css" href="/stylesheets/css/jquery-ui-smoothness.css" />
+    <link rel="stylesheet" type="text/css" href="/stylesheets/css/bootstrap.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="/javascripts/jquery-ui-1.12.0.js" aync></script>
+    <script src="/javascripts/simple.datagrid.js" aync></script>
+    <script src="/javascripts/jquery.switchButton.js" aync></script>
+    <script src="/javascripts/bootstrap.min.js"></script>
+    <script src="/javascripts/d3.v3.min.js"></script>
+    <script src="/javascripts/dimple.v2.2.0.min.js"></script>
+    <script src="http://dygraphs.com/1.1.1/dygraph-combined-dev.js"></script>
+</head>
+
+<body>
+    <%- include nav-bar %>
+        <div class="row">
+            <div class="col-md-4">
+                <%- include left-form-fieldset %>
+            </div>
+            <div class="col-md-8">
+                <%- include map %>
+            </div>
+        </div>
+        <div id="row-bot" class="a-table-row">
+            <div class="inner-wrap a-table-cell">
+                <div id="grid-wrap">
+                    <table id="coverage-table" class="simple-data-grid"></table>
+                </div>
+            </div>
+        </div>
+
+        <script src="/javascripts/initAutoComplete.js"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDjgcE_4RkfWJPYkZ8feGhe0MxkTNSyItY&libraries=places&callback=initAutocomplete"></script>
+        <script src="/javascripts/MarkerLabel.js" aync></script>
+        <script src="/javascripts/markerclusterer.js"></script>
+        <script src="/javascripts/fleetinfo.js"></script>
+        <script src="/javascripts/index.js"></script>
+</body>
+
+</html>

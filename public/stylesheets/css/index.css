@@ -58,6 +58,11 @@ body .ui-menu {
 #form-wrap .ui-checkboxradio-label {
   width: 90px; }
 
+#hor-container, #hor-container2 {
+  position: absolute;
+  left: 0;
+  padding: 0px; }
+
 #navigation-button {
   width: 98%;
   height: 40px;
@@ -113,8 +118,9 @@ legend {
 #fastestRoute:hover, #shortestRoute:hover {
   background: #fcf7f3; }
 
-#tabs-1 {
-  margin-top: 20px; }
+#tabs-1, #tabs-2 {
+  margin-top: 20px;
+  padding: 0px; }
 
 .table-wrap {
   width: 100%;

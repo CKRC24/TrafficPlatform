@@ -1,0 +1,207 @@
+@import url(font-awesome.min.css);
+@CHARSET "UTF-8";
+
+body,
+div,
+html {
+    margin: 0;
+    border: 0;
+    padding: 0;
+    font-family: Tahoma, Helvetica, Arial, "ctb_wcl-06", "Microsoft Yahei", "微软雅黑", STXihei, "华文细黑", sans-serif;
+    box-sizing: border-box;
+}
+
+body {
+    padding-top: 50px;
+}
+
+.row {
+    padding: 20px;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.row > [class*='col-'] {
+    display: flex;
+    flex-direction: column;
+}
+//map css
+
+#map_canvas {
+    height: 100%;
+    position: relative;
+    transform: translateZ(0px);
+    background-color: rgb(229, 227, 223);
+}
+
+#map-panel {
+    background-color: #CCCCCC;
+    width: 100%;
+    height: 100px;
+}
+
+.controls {
+    margin-top: 10px;
+    border: 1px solid transparent;
+    border-radius: 2px 0 0 2px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    height: 32px;
+    outline: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+#pac-input {
+    background-color: #fff;
+    font-family: Roboto;
+    font-size: 15px;
+    font-weight: 300;
+    margin-left: 12px;
+    padding: 0 11px 0 13px;
+    text-overflow: ellipsis;
+    width: 250px;
+}
+//map panel buttons
+
+#right-panel {
+    position: absolute;
+    right: 25px;
+    bottom: 40px;
+    //height: 264px;
+    width: 83px;
+    //background-color: white;
+    z-index: 9;
+}
+
+.panel-buttons {
+    height: 81px;
+    width: 76px;
+    margin: auto;
+    cursor: pointer;
+    background-color: #333;
+    border-radius: 10px;
+    /* padding: 5px; */
+    /* margin: 5px; */
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+#traffic-button {
+    background-image: url("/img/btn/btn01.png");
+
+    &:hover {
+        background-image: url("/img/btn/btn_hover01.png");
+    }
+
+    &.on {
+        background-image: url("/img/btn/btn_enabled01.png");
+    }
+}
+
+#event-button {
+    background-image: url("/img/btn/btn02.png");
+
+    &:hover {
+        background-image: url("/img/btn/btn_hover02.png");
+    }
+
+    &.on {
+        background-image: url("/img/btn/btn_enabled02.png");
+        background-position-x: -1px;
+    }
+}
+
+#parking-button {
+    background-image: url("/img/btn/btn03.png");
+    background-position-x: -1px;
+
+    &:hover {
+        background-image: url("/img/btn/btn_hover03.png");
+        background-position-x: -1px;
+    }
+
+    &.on {
+        background-image: url("/img/btn/btn_enabled03.png");
+        background-position-x: -1px;
+    }
+}
+
+#vd-button {
+    background-image: url("/img/btn/btn05.png");
+    background-position-x: -2px;
+
+    &:hover {
+        background-image: url("/img/btn/btn_hover05.png");
+    }
+
+    .on {
+        background-image: url("/img/btn/btn_enabled05.png");
+    }
+}
+
+#road-submit-button2 {
+    width: 98%;
+    height: 72px;
+    /* padding: 30px; */
+    vertical-align: middle;
+    margin: auto;
+    /* left: 0px; */
+    /* right: 0px; */
+    display: block;
+    background-color: #333;
+    color: #CCC;
+    font-weight: bold;
+    background-image: none;
+    border-radius: 17px;
+
+    &:hover {
+        color: #EEE;
+    }
+}
+//left form buttons
+
+#form-wrap .ui-checkboxradio-label {
+    font-size: 14px;
+    //width: 110px;
+    width: 90px;
+    //width: 78px;
+}
+
+#navigation-button {
+    width: 98%;
+    height: 40px;
+    vertical-align: middle;
+    margin: auto;
+    display: block;
+}
+
+.left-col-but-wrap {
+    margin: 10px auto;
+}
+
+#form-wrap {
+    legend{
+      margin-bottom: 10px;
+    }
+    fieldset {
+        padding: 10px 0;
+    }
+
+    #switchwrap {
+        padding: 10px 0;
+    }
+}
+//row bottom county coverage-field
+
+#row-bot {
+    padding: 4px 20px;
+    height: 110px;
+
+    .simple-data-grid {
+        font-size: 15px;
+        width: 100%;
+    }
+}

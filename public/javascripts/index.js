@@ -16,7 +16,8 @@ var mapFlags = {
     camera: false,
     tpeg: false,
     vd: false,
-    convenient: false
+    convenient: false,
+    coverage: false
 };
 //navigation setup
 var directionsService = new google.maps.DirectionsService();
@@ -120,7 +121,7 @@ var json_paths = {
         roadSpeed: "roadspeed?uuid=1234567777&lon=121.556916&lat=25.057415",
         parkingInfo: "parkinginfo?period=0&lon=121.556916&lat=25.057415&range=1000&hourly=0&vendor=0&uuid=1234567777",
         routePlan: "http://52.196.208.172:8080/TrafficPlatform/kaiwan/1125112402000055.kml",
-        coverage:"http://52.196.208.172:8080/Coverage"
+        coverage: "http://52.196.208.172:8080/Coverage"
     },
     dynamic: {
         CMSSearch: function() {
@@ -514,10 +515,11 @@ function showModal(info, markerPosition) {
     }, 300);
     //}, 500);
 }
-function directNavigation(){
-  $('#')
-  mapShow.routePlan();
-  showNavigationModal();
+
+function directNavigation() {
+    $('#')
+    mapShow.routePlan();
+    showNavigationModal();
 }
 //navigate modal
 function setUpNavigation() {
@@ -758,12 +760,12 @@ var mapShow = {
         map.setZoom(16);
     },
     //mapShow.timer
-    timer: function(json){
-      console.log("show timer");
-      $('#timer').removeClass('hidden');
-      var timerDiv = "";
-      timerDiv += String.format("<h2>預估<big>{0}</big>分後到達</h2>",json);
-      $('#timer').prop('innerHTML',timerDiv);
+    timer: function(json) {
+        console.log("show timer");
+        $('#timer').removeClass('hidden');
+        var timerDiv = "";
+        timerDiv += String.format("<h2>預估<big>{0}</big>分後到達</h2>", json);
+        $('#timer').prop('innerHTML', timerDiv);
     },
     //mapShow.ParkingInfo
     ParkingInfo: function() {
@@ -1183,6 +1185,9 @@ function redraw() {
     if (mapFlags.trafficFlow) {
         show = true;
     }
+    if(mapFlags.coverage){
+        show = true;
+    }
 
     if (!show) {
         showDialog('未選擇顯示項目，標記已清空!');
@@ -1209,7 +1214,7 @@ function showDialogCalender() {
 $.fn.extend({
     //draw coverage table
     drawTable: function() {
-      console.log("Draw");
+        console.log("Draw");
         $(this).empty();
         $(this).addClass('simple-data-grid');
         $(this).append("<thead><tr></tr></thead>");
@@ -1217,17 +1222,17 @@ $.fn.extend({
         var target = $(this);
 
         $.getJSON(json_path.coverage, function(json) {
-          console.log("coverage json");
-          var countyLength = Object.keys(json).length;
+            console.log("coverage json");
+            var countyLength = Object.keys(json).length;
             if (json && Object.keys(json).length > 0) {
-              var county = "";
-              var coverage = "";
-              county = Object.keys(json).toString().split(",");
-              coverage = Object.values(json).toString().split(",");
-              for( var i = 1; i < countyLength ; i++){
-                $(target).find("thead").find("tr").append(String.format('<th data-key="{0}" class="sdg-col_{0}">{0}</th>',county[i]));
-                $(target).find("tbody").find("tr").append(String.format('<td class="sdg-col_{0}">{1}</td>', county[i],coverage[i]));
-              }
+                var county = "";
+                var coverage = "";
+                county = Object.keys(json).toString().split(",");
+                coverage = Object.values(json).toString().split(",");
+                for (var i = 1; i < countyLength; i++) {
+                    $(target).find("thead").find("tr").append(String.format('<th data-key="{0}" class="sdg-col_{0}">{0}</th>', county[i]));
+                    $(target).find("tbody").find("tr").append(String.format('<td class="sdg-col_{0}">{1}</td>', county[i], coverage[i]));
+                }
             }
         });
     }
@@ -1256,12 +1261,17 @@ function SetCenter() {
 
 function drawDataTable() {
     var infoCat = $("#info-category").val();
+    console.log(infoCat);
     switch (infoCat) {
         case 'county':
             $('#coverage-table').drawTable();
+            $('#coverage-table').removeClass('hidden');
             break;
         case 'roads':
-            $('#coverage-table').drawTable();
+            $('#coverage-table').addClass('hidden');
+            break;
+        case 'none':
+            $('#coverage-table').addClass('hidden');
             break;
     }
 }
@@ -1536,7 +1546,7 @@ $(document).ready(function() {
     $("#info-category").selectmenu();
     $("#parking-hourly").selectmenu();
     $("#parking-type").selectmenu();
-    $("#info-category").on("selectmenuchange", drawDataTable);
+    //$("#info-category").on("selectmenuchange", drawDataTable);
 
     //joseph
     $("#fleet-category").selectmenu();
@@ -1734,6 +1744,12 @@ function btn_click() {
         mapFlags.convenient = true;
     } else {
         mapFlags.convenient = false;
+    }
+
+    if ($('#info-category').val() == 'county') {
+        mapFlags.coverage = true;
+    } else {
+        mapFlags.coverage = false;
     }
 
     google.maps.Map.prototype.clearOverlays();

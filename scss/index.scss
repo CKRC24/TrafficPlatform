@@ -1,6 +1,5 @@
 @import url(font-awesome.min.css);
 @CHARSET "UTF-8";
-
 body,
 div,
 html {
@@ -72,7 +71,11 @@ body .ui-menu {
     width: 90px;
     //width: 78px;
 }
-
+#hor-container,#hor-container2{
+  position:absolute;
+  left:0;
+  padding:0px;
+}
 
 #navigation-button{
   width: 98%;
@@ -139,8 +142,9 @@ legend {
 #fastestRoute:hover,#shortestRoute:hover{
   background:#fcf7f3;
 }
-#tabs-1 {
-    //margin-top: 20px;
+#tabs-1,#tabs-2 {
+    margin-top: 20px;
+    padding: 0px;
     //display:table-row;
 }
 
