@@ -1,102 +1,95 @@
-<div id="hor-container2" class="container a-table">
-    <div id="row-top2" class="a-table-row">
-        <div class="inner-wrap a-table-cell">
-            <div id="main-container2" class="container a-table">
-                <div class="inner-wrap a-table-row">
-                    <div id="col-left2" class="cells a-table-cell">
-                        <div id="form-wrap">
-                            <fieldset id="dialog-fileld">
-                                <div id="form-dialog2" title="請選擇">
-                                    <form>
-                                        <div id="calender-wrap2">
-                                            <div id="calendar2"></div>
-                                        </div>
+<div class="row">
+    <div id="col-left" class="col-md-4">
+      <div id="form-wrap">
+          <fieldset id="dialog-fileld">
+              <div id="form-dialog2" title="請選擇">
+                  <form>
+                      <div id="calender-wrap2">
+                          <div id="calendar2"></div>
+                      </div>
 
-                                        <div class="label-wrap">
-                                            <label id="lbl-datetime-caption-dialog2" class="left-l">日期時間: </label>
-                                            <label id="lbl-datetime2" class="right-l"></label>
-                                        </div>
-                                    </form>
-                                </div>
-                            </fieldset>
-                            <fieldset id="display-fileld">
-                                <legend> 選擇縣市 </legend>
-                                <div class="table-wrap">
-                                    <div class="table-row">
-                                        <div class="table-column table-col-left">資料類別</div>
-                                        <div class="table-column table-col-right">
-                                            <select name="縣市地區" id="data-area">
-                                            <option value="臺北市">臺北市</option>
-                                            <option value="基隆市">基隆市</option>
-                                            <option value="桃園市">桃園市</option>
-                                            <option value="新竹市">新竹市</option>
-                                            <option value="新竹縣">新竹縣</option>
-                                            <option value="苗栗縣">苗栗縣</option>
-                                            <option value="台中市">台中市</option>
-                                            <option value="南投縣">南投縣</option>
-                                            <option value="彰化縣">彰化縣</option>
-                                            <option value="雲林縣">雲林縣</option>
-                                            <option value="嘉義市">嘉義市</option>
-                                            <option value="嘉義縣">嘉義縣</option>
-                                        </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </fieldset>
-                            <fieldset id="coverage-field">
-                                <legend> 顯示方式 </legend>
-                                <div class="table-wrap">
-                                    <div class="table-row">
-                                        <div class="table-column table-col-left">顯示週期</div>
-                                        <div class="table-column table-col-right">
-                                            <select name="顯示週期" id="data-scale">
-                                            <option value="0">一天</option>
-                                            <option value="1" >一週</option>
-                                        </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </fieldset>
-                            <div class="left-col-but-wrap">
-                                <div id="but-wrap2">
-                                    <input id="coverage-submit-button" class="ui-button ui-widget ui-corner-all" type="submit" value="產生圖表">
-                                    <label id="lbl-datasource" class="right-l hidden">test</label>
-                                </div>
+                      <div class="label-wrap">
+                          <label id="lbl-datetime-caption-dialog2" class="left-l">日期時間: </label>
+                          <label id="lbl-datetime2" class="right-l"></label>
+                      </div>
+                  </form>
+              </div>
+          </fieldset>
+          <fieldset id="display-fileld">
+              <legend> 選擇縣市 </legend>
+              <div class="table-wrap">
+                  <div class="table-row">
+                      <div class="table-column table-col-left">資料類別</div>
+                      <div class="table-column table-col-right">
+                          <select name="縣市地區" id="data-area">
+                          <option value="臺北市">臺北市</option>
+                          <option value="基隆市">基隆市</option>
+                          <option value="桃園市">桃園市</option>
+                          <option value="新竹市">新竹市</option>
+                          <option value="新竹縣">新竹縣</option>
+                          <option value="苗栗縣">苗栗縣</option>
+                          <option value="台中市">台中市</option>
+                          <option value="南投縣">南投縣</option>
+                          <option value="彰化縣">彰化縣</option>
+                          <option value="雲林縣">雲林縣</option>
+                          <option value="嘉義市">嘉義市</option>
+                          <option value="嘉義縣">嘉義縣</option>
+                      </select>
+                      </div>
+                  </div>
+              </div>
+          </fieldset>
+          <fieldset id="coverage-field">
+              <legend> 顯示方式 </legend>
+              <div class="table-wrap">
+                  <div class="table-row">
+                      <div class="table-column table-col-left">顯示週期</div>
+                      <div class="table-column table-col-right">
+                          <select name="顯示週期" id="data-scale">
+                          <option value="0">一天</option>
+                          <option value="1" >一週</option>
+                      </select>
+                      </div>
+                  </div>
+              </div>
+          </fieldset>
+          <div class="left-col-but-wrap">
+              <div id="but-wrap2">
+                  <input id="coverage-submit-button" class="ui-button ui-widget ui-corner-all" type="submit" value="產生圖表">
+                  <label id="lbl-datasource" class="right-l hidden">test</label>
+              </div>
 
-                            </div>
-                        </div>
-                    </div>
-                    <div id="col-right3" class="cells a-table-cell">
-                        <fieldset id="parking-field2">
-                            <legend> 涵蓋率顯示 </legend>
-                            <div id="div_g2"></div>
-                            <table id="coveragetable-table" class="scroll simple-data-grid hidden" align="center" valign="center">
-                                <thead>
-                                    <tr>
-                                        <tH></tH>
-                                        <tH>0分</tH>
-                                        <tH>5分</tH>
-                                        <tH>10分</tH>
-                                        <tH>15分</tH>
-                                        <tH>20分</tH>
-                                        <tH>25分</tH>
-                                        <tH>30分</tH>
-                                        <tH>35分</tH>
-                                        <tH>40分</tH>
-                                        <tH>45分</tH>
-                                        <tH>50分</tH>
-                                        </tH>
-                                        <tH>55分</tH>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr></tr>
-                                </tbody>
-                            </table>
-                        </fieldset>
-                    </div>
-                </div>
-            </div>
-        </div>
+          </div>
+      </div>
+    </div>
+    <div id="col-right" class="col-md-8">
+      <fieldset id="parking-field2">
+          <legend> 涵蓋率顯示 </legend>
+          <div id="div_g2"></div>
+          <table id="coveragetable-table" class="scroll simple-data-grid hidden" align="center" valign="center">
+              <thead>
+                  <tr>
+                      <tH></tH>
+                      <tH>0分</tH>
+                      <tH>5分</tH>
+                      <tH>10分</tH>
+                      <tH>15分</tH>
+                      <tH>20分</tH>
+                      <tH>25分</tH>
+                      <tH>30分</tH>
+                      <tH>35分</tH>
+                      <tH>40分</tH>
+                      <tH>45分</tH>
+                      <tH>50分</tH>
+                      </tH>
+                      <tH>55分</tH>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr></tr>
+              </tbody>
+          </table>
+      </fieldset>
     </div>
 </div>
+  

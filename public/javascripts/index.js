@@ -68,7 +68,8 @@ var modal = {
         var topBotMargin = (windowHeight - (modalHeight + 30)) / 2;
         $('#navigation-modal').css('margin-top', topBotMargin);
         $('#navigation-modal').css('margin-bottom', topBotMargin);
-    }
+    },
+
 }
 
 var timetype = ["instant", "15min", "30min", "history"];
@@ -764,7 +765,7 @@ var mapShow = {
         console.log("show timer");
         $('#timer').removeClass('hidden');
         var timerDiv = "";
-        timerDiv += String.format("<h2>預估<big>{0}</big>分後到達</h2>", json);
+        timerDiv += String.format("<h3>預估<big>{0}</big>分後到達</h3>", json);
         $('#timer').prop('innerHTML', timerDiv);
     },
     //mapShow.ParkingInfo
@@ -1201,8 +1202,21 @@ function redraw() {
 
 function showDialog(msg) {
     $('#confirm-dialog p').prop('innerHTML', msg);
-    $("#confirm-dialog").dialog("open");
+    $("#info-dialog").removeClass('hidden');
+    var modalHeight = $('#info-dialog').height();
+    var windowHeight = $('#col-right').height();
+    var topBotMargin = (windowHeight - (modalHeight + 30)) / 2;
+    $('#info-dialog').css('margin-top', topBotMargin);
+    $('#info-dialog').css('margin-bottom', topBotMargin);
 }
+
+$('#modal-close').click(function(){
+  $("#info-dialog").addClass('hidden');
+});
+
+$('#info-btn-close').click(function(){
+  $("#info-dialog").addClass('hidden');
+});
 
 function showDialogCalender() {
     //$('#form-dialog').find('fieldset').prop('innerHTML', $('#calender-wrap').html());
@@ -1367,9 +1381,10 @@ function syncDateTime2() {
 
 function CreateSearchBox() {
     //Create searchBox on the map
+    var searchDiv = document.getElementById('searchBox');
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(searchDiv);
     var input = document.getElementById('pac-input');
     var searchBox = new google.maps.places.SearchBox(input);
-    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
     // Bias the SearchBox results towards current map's viewport.
     map.addListener('bounds_changed', function() {
         searchBox.setBounds(map.getBounds());
@@ -1474,7 +1489,7 @@ $(document).ready(function() {
         active: 0
     });
 
-    $("#confirm-dialog").dialog({
+    /*$("#confirm-dialog").dialog({
         autoOpen: false,
         show: {
             duration: 100
@@ -1488,7 +1503,7 @@ $(document).ready(function() {
                 $(this).dialog("close");
             }
         }
-    });
+    });*/
 
     $("#form-dialog").dialog({
         width: 360,
@@ -1745,7 +1760,7 @@ function btn_click() {
     } else {
         mapFlags.convenient = false;
     }
-
+    // info-category switch
     if ($('#info-category').val() == 'county') {
         mapFlags.coverage = true;
     } else {

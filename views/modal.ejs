@@ -22,10 +22,14 @@
                     </div>
                     <!--  modal body end -->
                     <!-- 按鈕 -->
-                    <div  class="modal-footer">
+                    <div class="modal-footer">
                         <div class="row">
-                            <a id="modal-dismiss" href="javascript:void(0)" class="btn lightblue" data-dismiss="modal">知道了</a>
-                            <a id="modal-goto" href="#" class="btn lightblue">前往此處</a>
+                            <div class="col-md-6">
+                                <a id="modal-dismiss" href="javascript:void(0)" class="btn lightblue" data-dismiss="modal">知道了</a>
+                            </div>
+                            <div class="col-md-6">
+                                <a id="modal-goto" href="#" class="btn lightblue">前往此處</a>
+                            </div>
                         </div>
                     </div>
                     <div id="modal-pointer" class="">
@@ -73,10 +77,44 @@
                     </div>
                     <!--  modal body end -->
                     <!-- 按鈕 -->
-                    <div class="modal-footer">
-                        <div id="navigate-modal-footer" class="row">
-                            <a id="modal-navigate-dismiss" href="javascript:void(0)" class="btn lightblue" data-dismiss="modal">知道了</a>
-                            <a id="modal-routeSearch" href="#" class="btn lightblue">查詢路徑</a>
+                    <div id="navigate-modal-footer" class="modal-footer">
+                        <div  class="row">
+                            <div class="col-md-6">
+                                <a id="modal-navigate-dismiss" href="javascript:void(0)" class="btn lightblue" data-dismiss="modal">知道了</a>
+                            </div>
+                            <div class="col-md-6">
+                                <a id="modal-routeSearch" href="#" class="btn lightblue">查詢路徑</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+    </div>
+    <div id="info-dialog" class="hidden ">
+        <div class="modal-app-msg">
+            <div class="modal-dialog app-msg ">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button id="info-btn-close" type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-times" aria-hidden="true"></i></button>
+                        <h4 class="modal-title">確認</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="exdetail">
+                          <div id="confirm-dialog" >
+                              <p>This is the default dialog which is useful for displaying information. The dialog window can be moved, resized and closed with the 'x' icon.</p>
+                          </div>
+                        </div>
+                    </div>
+                    <!--  modal body end -->
+                    <!-- 按鈕 -->
+                    <div id="dialog-modal-footer" class="modal-footer">
+                        <div  class="row">
+                            <div class="col-md-offset-8 col-md-4 ">
+                                <a id="modal-close" href="#" class="btn lightblue">知道了</a>
+                            </div>
                         </div>
                     </div>
                 </div>

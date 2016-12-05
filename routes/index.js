@@ -7,7 +7,7 @@ router.get('/', function(req, res) {
   res.locals.username = req.session.username;
   res.locals.authenticated = req.session.logined;
   req.session.message = null;
-  res.render('index', { title: '交通資訊平台' });
+  res.render('index_test', { title: '交通資訊平台' });
 });
 
 module.exports = router;

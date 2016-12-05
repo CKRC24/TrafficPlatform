@@ -27,21 +27,31 @@
 
 <body>
     <%- include nav-bar %>
-        <div class="row">
-            <div class="col-md-4">
-                <%- include left-form-fieldset %>
-            </div>
-            <div class="col-md-8">
-                <%- include map %>
-            </div>
-        </div>
-        <div id="row-bot" class="a-table-row">
-            <div class="inner-wrap a-table-cell">
-                <div id="grid-wrap">
-                    <table id="coverage-table" class="simple-data-grid"></table>
+        <div class="tab-content">
+            <div id="tabs-1" class="tab-pane fade in active">
+                <div class="row">
+                    <div id="col-left" class="col-md-4">
+                        <%- include left-form-fieldset %>
+                    </div>
+                    <div id="col-right" class="col-md-8">
+                        <%- include map %>
+                    </div>
+                </div>
+                <div id="row-bot" class="a-table-row">
+                    <div class="inner-wrap a-table-cell">
+                        <div id="grid-wrap">
+                            <table id="coverage-table" class="simple-data-grid"></table>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <div id="tabs-2" class="tab-pane fade">
+                <%- include coverage-chart %>
+            </div>
         </div>
+        
+        <!--calendar modal for selecting time -->
+        <%- include calendar-dialog %>
 
         <script src="/javascripts/initAutoComplete.js"></script>
         <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDjgcE_4RkfWJPYkZ8feGhe0MxkTNSyItY&libraries=places&callback=initAutocomplete"></script>
