@@ -10,5 +10,4 @@ router.get('/', function(req, res) {
   res.render('index', { title: '交通資訊平台' });
 });
 
-
 module.exports = router;
